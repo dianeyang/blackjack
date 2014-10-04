@@ -7,5 +7,7 @@ module Blackjack
 			puts "new game started"
 			@players = players
 		end
+		def play
+			puts "time to play"
 	end
 end

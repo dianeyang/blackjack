@@ -25,4 +25,4 @@ for i in 1..nplayers
 	players[i] = Blackjack::Player.new
 end
 
-Blackjack::Game.new(players)
+Blackjack::Game.new(players).play
