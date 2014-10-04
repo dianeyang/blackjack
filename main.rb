@@ -1,4 +1,4 @@
-require "./game"
+require './blackjack'
 
 puts """
   ____  _            _     _            _    
@@ -11,18 +11,22 @@ puts """
 
 puts "\n\n"
 
-prompt = '> '
+puts "Hello there, lucky ladies and gents! I'll be your dealer tonight."
 
-puts "How many players are at the table?", prompt
+puts "But first, how many players are at the table?"
+print "> "
 nplayers = $stdin.gets.chomp.to_i
 
-puts """
-There are #{nplayers} players at the table.
-"""
+puts "#{nplayers} players? Sounds good. What are your names?", ""
 
 players = Array.new(nplayers)
-for i in 1..nplayers
-	players[i] = Blackjack::Player.new
+players.each_with_index do |item, i|
+	print "Player #{i+1}: "
+	name = $stdin.gets.chomp
+	players[i] = Blackjack::Player.new(name)
+	puts "Nice to meet you, #{name}!", ""
 end
+table = Blackjack::Table.new
+dealer = Blackjack::Dealer.new
 
-Blackjack::Game.new(players).play
+Blackjack::Game.new(players, table, dealer).play
