@@ -82,7 +82,10 @@ module Blackjack
 		# 			player.update_cash(player.bet)
 		# 		end
 		# 	end
-		# end
+		# 
+		def active_players
+			return @players.select {|player| player.active}
+		end
 		def play
 			while true
 				# each player makes bets
@@ -93,7 +96,7 @@ module Blackjack
 				self.distribute_cards
 
 				# # players go around the table deciding what moves to make
-				while !@players.select {|player| player.active}.empty?
+				while self.active_players
 				 	self.do_moves
 				end
 
