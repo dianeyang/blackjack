@@ -47,11 +47,13 @@ module Blackjack
 		def do_moves
 			self.active_players.each do |player|
 				puts "#{player.name}, what do you want to do?"
-				puts "H: Hit (take a card)"
-				puts "E: Stand (end turn)"
-				puts "D: Double (double bet, take one card, and stand)"
-				puts "S: Split (If the 2 cards have equal value, separate them and make 2 hands"
-				puts "X: Surrender (Give up a half-bet and retire from game)"
+				puts "H: [H]it (take a card)"
+				puts "E: Stand ([E]nd turn)"
+				if @round == 1
+					puts "D: [D]ouble (double bet, take one card, and stand)"
+					puts "S: [S]plit (If the 2 cards have equal value, separate them and make 2 hands)"
+				end
+				puts "R: Surrender ([R]etire from game and lose half your bet)"
 				print "> "
 				move = $stdin.gets.chomp.downcase
 
@@ -95,6 +97,7 @@ module Blackjack
 				# # players go around the table deciding what moves to make
 				while !self.active_players.empty?
 				 	self.do_moves
+				 	@round += 1
 				end
 
 				# the dealer reveals the hole card and hits until 17
