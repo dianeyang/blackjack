@@ -95,6 +95,7 @@ module Blackjack
 				# # players go around the table deciding what moves to make
 				while !@players.select {|player| player.active}.empty?
 				 	self.do_moves
+				end
 
 				# # whoever won gets their bet
 				# self.determine_winners
