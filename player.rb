@@ -3,13 +3,13 @@ module Blackjack
 		attr_accessor :bet
 		attr_accessor :cash
 		attr_accessor :active
-		attr_reader :identifier
-		def initialize(identifier)
+		attr_reader :name
+		def initialize(name)
 			@cash = 1000
 			@bet = nil
 			@hand = Array.new
 			@active = true
-			@identifier = identifier
+			@name = name
 		end
 		def do_move(move)
 			
