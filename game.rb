@@ -13,16 +13,16 @@ module Blackjack
 		end
 		def reset_game
 			@players.each do |player|
-				if player.cash > 0
-					player.reset
-				else
+				if player.cash <= 0
 					puts "Sorry #{player.name}, but you'll have to sit this out. You don't have any money left."
+					next
 				end
+				player.reset
 			end
 			@round = 0
 		end
 		def declare_bets
-			@players.each do |player|
+			self.active_players.each do |player|
 				puts "#{player.name}, what is your bet? You may bet an integer between 1 and 1000"
 				puts "You currently have $#{player.cash}"
 				print "> "
@@ -38,7 +38,7 @@ module Blackjack
 			end
 		end
 		def distribute_cards
-			@players.each do |player|
+			self.active_players.each do |player|
 				card1 = @dealer.deal_one
 				card2 = @dealer.deal_one
 				player.add_card(card1)
@@ -87,6 +87,10 @@ module Blackjack
 		def play
 			while true
 				self.reset_game
+				if self.active_players.length == 0
+					puts "No one has cash left. Guess it's game over. Thanks for playing!"
+					break
+				end
 				# each player makes bets
 				self.declare_bets
 
