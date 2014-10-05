@@ -16,7 +16,8 @@ module Blackjack
 				if player.cash > 0
 					player.reset
 				else
-					puts "Sorry #{player.name}, but you'll have to sit this out. You don't have any money left. "
+					puts "Sorry #{player.name}, but you'll have to sit this out. You don't have any money left."
+				end
 			end
 			@round = 0
 		end

@@ -86,26 +86,18 @@ module Blackjack
 			puts "You are now sitting out of the game.", ""
 		end
 		def double(card)
-			if @bet * 2 > @cash
-				puts "Sorry, you don't have enough cash to double", ""
-				return
-			end
 			puts "You chose to double."
 			self.add_card(card)
+			@bet *= 2
+			puts "Your bet is now $#{@bet}.", ""
 			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
 			if @hand.calc_value > 21
 				self.bust
 				return
 			end
-			@bet *= 2
-			puts "Your bet is now $#{@bet}.", ""
 			@active = false
 		end
 		def split
-			if @bet * 2 > @cash
-				puts "Sorry, you don't have enough cash to split", ""
-				return
-			end
 			puts "You chose to split", ""
 			if @hand.get(0).value == @hand.get(1).value
 				hand1, hand2 = @hand.split
@@ -116,20 +108,20 @@ module Blackjack
 			@lost = true
 			@active = false
 			puts "You chose to surrender."
-			puts "You lost half of your $#{@bet}, leaving you with $#{@cash}.", ""
+			puts "You lost half of your $#{@bet} bet, leaving you with $#{@cash}.", ""
 		end
 		def calc_score
 			return @hand.calc_value
 		end
 		def win
 			@cash += @bet
-			puts "#{@name} won $#{@bet}! Your cash is now $#{@cash}."
+			puts "#{@name} won $#{@bet} and now has $#{@cash}!"
 			@active = false
 		end
 		def lose
 			@lost = true
 			@cash -= @bet
-			puts "#{@name} didn't surpass the dealer, so you lost. Your cash is now $#{@cash}."
+			puts "#{@name} didn't surpass the dealer and lost. #{@name}'s cash is now $#{@cash}."
 		end
 	end
 end
