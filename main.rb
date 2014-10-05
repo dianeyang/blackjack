@@ -15,6 +15,11 @@ def main
 	puts "But first, how many players are at the table?"
 	print "> "
 	nplayers = $stdin.gets.chomp.to_i
+	while nplayers <= 0
+		puts "Invalid number of players. Please try again."
+		nplayers = $stdin.gets.chomp.to_i
+	end
+
 	puts "#{nplayers} players? Sounds good. What are your names?", ""
 
 	players = Array.new(nplayers)

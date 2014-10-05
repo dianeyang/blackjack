@@ -86,8 +86,10 @@ module Blackjack
 				player.hands.each_index do |i|
 					next if player.hands[i].lost
 					value = player.hands[i].calc_value
-					if value > target && value <= 21
+					if value > target
 						player.win(i)
+					elsif value == target
+						player.tie(i)
 					else
 						player.lose(i)
 					end

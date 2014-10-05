@@ -135,6 +135,8 @@ module Blackjack
 			puts "#{@name} won $#{@hands[i].bet} from hand \##{i+1} and now has $#{@cash}!"
 			@hands[i].active = false
 		end
+		def tie(i)
+			puts "#{@name}'s hand \##{i+1} tied with the dealer, neither winning nor losing money. #{@name} still has $#{@cash}."
 		def lose(i)
 			@hands[i].lost = true
 			@cash -= @hands[i].bet
