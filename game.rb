@@ -33,7 +33,10 @@ module Blackjack
 			faceup = @dealer.deal_to_self
 			puts "The dealer has a #{faceup.type} of #{faceup.suit} and a face-down card."
 		end
-		# def do_moves
+		def do_moves
+			puts "moves"
+			$stdin.gets
+		end
 		# 	@players.each do |player|
 		# 		if !player.active
 		# 			return
@@ -90,8 +93,8 @@ module Blackjack
 				self.distribute_cards
 
 				# # players go around the table deciding what moves to make
-				# while !@remaining_players.empty?
-				# 	self.do_moves
+				while !@players.select {|player| player.active}.empty?
+				 	self.do_moves
 
 				# # whoever won gets their bet
 				# self.determine_winners
