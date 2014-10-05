@@ -1,8 +1,8 @@
 module Blackjack
 	class Game
-		def initialize(players, dealer)
+		def initialize(players)
 			@players = players
-			@dealer = dealer
+			@dealer = Blackjack::Dealer.new
 			@round = 0
 		end
 		def active_players

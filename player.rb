@@ -38,7 +38,7 @@ module Blackjack
 			end
 			not_first_round = (move == "d" || move == "s") && (round != 0)
 			if not_first_round
-				puts "You can only make that move at the first decision. Please try again."
+				puts "You can only make that move for your first two cards. Please try again."
 				return false
 			end
 			not_enough_cash = (move == "d" || move == "s") && (self.can_double_bet)
@@ -65,37 +65,44 @@ module Blackjack
 			move = $stdin.gets.chomp.downcase
 			return move
 		end
+		def check_hand
+			value = @hand.calc_value
+			if value > 21
+				self.bust
+			elsif value == 21
+				self.stand(true)
+			end
+		end
 		def bust
 			@cash -= @bet
 			@active = false
 			@lost = true
-			puts "Uh oh! The value of your hand is over 21 :("
+			puts "Uh oh! The value of your hand has surpassed 21."
 			puts "Your bet of $#{@bet} has been deducted from your cash, leaving you with $#{@cash}", ""
 		end
 		def hit(card)
 			puts "You chose to hit."
 			self.add_card(card)
 			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
-			if @hand.calc_value > 21
-				self.bust
-			end
+			self.check_hand
 		end
-		def stand
+		def stand(automatic=false)
 			@active = false
-			puts "You chose to stand."
-			puts "You are now sitting out of the game.", ""
+			if automatic
+				puts "You hit blackjack, so you automatically stand."
+			else
+				puts "You chose to stand."
+			end
+			puts "You cannot take any more cards for this hand, and your total will stay at #{@hand.calc_value}.", ""
 		end
 		def double(card)
 			puts "You chose to double."
 			self.add_card(card)
 			@bet *= 2
+			@active = false
 			puts "Your bet is now $#{@bet}.", ""
 			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
-			if @hand.calc_value > 21
-				self.bust
-				return
-			end
-			@active = false
+			self.check_hand
 		end
 		def split
 			puts "You chose to split", ""

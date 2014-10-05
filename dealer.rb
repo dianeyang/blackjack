@@ -1,8 +1,8 @@
 module Blackjack
 	class Dealer
-		def initialize(deck)
+		def initialize
 			@hand = Blackjack::Hand.new
-			@deck = deck
+			@deck = Blackjack::Deck.new
 		end
 		def deal_one
 			return @deck.remove_card
@@ -30,7 +30,7 @@ module Blackjack
 				self.hit
 			end
 			if @hand.calc_value > 21
-				puts "The dealer got over 21!"
+				puts "The dealer got over 21! All remaining players win their bets."
 				return 0
 			else
 				score = @hand.calc_value
