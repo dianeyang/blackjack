@@ -30,6 +30,41 @@ module Blackjack
 		def can_double_bet
 			return @bet * 2 > @cash
 		end
+		def validate_decision(move, round)
+			in_set = ["h", "e", "d", "s", "r"].include? move
+			if !in_set
+				puts "Invalid move. Please try again."
+				return false
+			end
+			not_first_round = (move == "d" || move == "s") && (round != 0)
+			if not_first_round
+				puts "You can only make that move at the first decision. Please try again."
+				return false
+			end
+			not_enough_cash = (move == "d" || move == "s") && (self.can_double_bet)
+			if not_enough_cash
+				puts "Sorry, you don't have enough cash to make that move. Please try again."
+				return false
+			end
+			return true
+		end
+		def make_decision(round)
+			puts "#{@name}, what do you want to do?"
+			puts "H: Hit (take a card)"
+			puts "E: Stand ([E]nd turn)"
+			if round == 0
+				puts "D: Double down (double bet, take one card, and stand)"
+				puts "S: Split (If the 2 cards have equal value, separate them and make 2 hands)"
+			end
+			puts "R: Surrender ([R]etire from game and lose half your bet)"
+			puts ""
+
+			self.print_stats
+
+			print "> "
+			move = $stdin.gets.chomp.downcase
+			return move
+		end
 		def bust
 			@cash -= @bet
 			@active = false

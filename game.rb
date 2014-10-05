@@ -13,7 +13,10 @@ module Blackjack
 		end
 		def reset_game
 			@players.each do |player|
-				player.reset
+				if player.cash > 0
+					player.reset
+				else
+					puts "Sorry #{player.name}, but you'll have to sit this out. You don't have any money left. "
 			end
 			@round = 0
 		end
@@ -49,46 +52,11 @@ module Blackjack
 			self.active_players.each do |player|
 				valid = false
 				while !valid
-					move = self.get_decision(player)
-					valid = validate_move(move, player)
+					move = player.make_decision(@round)
+					valid = player.validate_decision(move, @round)
 				end
 				self.handle_decision(move, player)
 			end
-		end
-		def validate_move(move, player)
-			in_set = ["h", "e", "d", "s", "r"].include? move
-			if !in_set
-				puts "Invalid move. Please try again."
-				return false
-			end
-			not_first_round = (move == "d" || move == "s") && (@round != 0)
-			if not_first_round
-				puts "You can only make that move at the first decision. Please try again."
-				return false
-			end
-			not_enough_cash = (move == "d" || move == "s") && (!player.can_double_bet)
-			if not_enough_cash
-				puts "Sorry, you don't have enough cash to make that move. Please try again."
-				return false
-			end
-			return true
-		end
-		def get_decision(player)
-			puts "#{player.name}, what do you want to do?"
-			puts "H: Hit (take a card)"
-			puts "E: Stand ([E]nd turn)"
-			if @round == 0
-				puts "D: Double down (double bet, take one card, and stand)"
-				puts "S: Split (If the 2 cards have equal value, separate them and make 2 hands)"
-			end
-			puts "R: Surrender ([R]etire from game and lose half your bet)"
-			puts ""
-
-			player.print_stats
-
-			print "> "
-			move = $stdin.gets.chomp.downcase
-			return move
 		end
 		def handle_decision(move, player)
 			case
