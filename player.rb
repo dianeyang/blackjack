@@ -27,6 +27,9 @@ module Blackjack
 			puts "Current bet: $#{@bet}"
 			puts "Hand: " + @hand.print_hand
 		end
+		def can_double_bet
+			return @bet * 2 > @cash
+		end
 		def bust
 			@cash -= @bet
 			@active = false
@@ -64,7 +67,14 @@ module Blackjack
 			@active = false
 		end
 		def split
+			if @bet * 2 > @cash
+				puts "Sorry, you don't have enough cash to split", ""
+				return
+			end
 			puts "You chose to split", ""
+			if @hand.get(0).value == @hand.get(1).value
+				hand1, hand2 = @hand.split
+			end
 		end
 		def surrender
 			@cash -= @bet/2
