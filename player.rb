@@ -1,55 +1,39 @@
 module Blackjack
 	class Player
-		attr_accessor :bet
 		attr_reader :cash
-		attr_reader :active
-		attr_reader :lost
 		attr_reader :name
+		attr_reader :hands
 		def initialize(name)
 			@cash = 1000
-			@bet = nil
-			@hand = Blackjack::Hand.new
-			@active = true
-			@lost = false
+			@hands = [Blackjack::Hand.new]
 			@name = name
 		end
 		def reset
-			@bet = nil
-			@hand = Blackjack::Hand.new
-			@active = true
-			@lost = false
+			@hands = [Blackjack::Hand.new]
 		end
-		def add_card(card)
-			@hand.add_card(card)
+		def is_active
+			return @hands.reduce(false) do |others, current|
+				others || current.active
+			end
 		end
-		def print_stats
+		def has_lost
+			return @hands.reduce(true) do |others, current|
+				others && current.lost
+			end
+		end
+		def add_card(card, i)
+			@hands[i].add_card(card)
+		end
+		def print_stats(i)
 			puts "Cash: $#{@cash}"
-			puts "Current bet: $#{@bet}"
-			puts "Hand: " + @hand.print_hand
+			puts "Current bet: $#{@hands[i].bet}"
+			puts "Hand: #{@hands[i].print_hand}"
 		end
 		def can_double_bet
-			return @bet * 2 > @cash
+			return @hands[0].bet * 2 > @cash
 		end
-		def validate_decision(move, round)
-			in_set = ["h", "e", "d", "s", "r"].include? move
-			if !in_set
-				puts "Invalid move. Please try again."
-				return false
-			end
-			not_first_round = (move == "d" || move == "s") && (round != 0)
-			if not_first_round
-				puts "You can only make that move for your first two cards. Please try again."
-				return false
-			end
-			not_enough_cash = (move == "d" || move == "s") && (self.can_double_bet)
-			if not_enough_cash
-				puts "Sorry, you don't have enough cash to make that move. Please try again."
-				return false
-			end
-			return true
-		end
-		def make_decision(round)
-			puts "#{@name}, what do you want to do?"
+		def get_move(round, i)
+			puts "#{@name}, what do you want to do with this hand?"
 			puts "H: Hit (take a card)"
 			puts "E: Stand ([E]nd turn)"
 			if round == 0
@@ -58,77 +42,103 @@ module Blackjack
 			end
 			puts "R: Surrender ([R]etire from game and lose half your bet)"
 			puts ""
+			self.print_stats(i)
 
-			self.print_stats
-
-			print "> "
-			move = $stdin.gets.chomp.downcase
+			valid = false
+			while !valid
+				print "> "
+				move = $stdin.gets.chomp.downcase
+				valid = self.validate_move(move, round, i)
+			end
 			return move
 		end
-		def check_hand
-			value = @hand.calc_value
+		def validate_move(move, round, i)
+			in_set = ["h", "e", "d", "s", "r"].include? move
+			if !in_set
+				puts "Invalid move. Please try again."
+				return false
+			end
+			not_first_round = (move == "d" || move == "s") && round != 0
+			if not_first_round
+				puts "You can only make that move for your first two cards. Please try again."
+				return false
+			end
+			not_pair = move == "s" && @hands[0].get(0).value != @hands[0].get(1).value
+			if not_pair
+				puts "Sorry, you can't split because your cards do not have the same value."
+				return false
+			end
+			not_enough_cash = (move == "d" || move == "s") && self.can_double_bet
+			if not_enough_cash
+				puts "Sorry, you don't have enough cash to make that move. Please try again."
+				return false
+			end
+			return true
+		end
+		def check_hand(i)
+			value = @hands[i].calc_value
 			if value > 21
-				self.bust
+				self.bust(i)
 			elsif value == 21
-				self.stand(true)
+				self.stand(i, true)
 			end
 		end
-		def bust
-			@cash -= @bet
-			@active = false
-			@lost = true
+		def bust(i)
+			@cash -= @hands[i].bet
+			@hands[i].active = false
+			@hands[i].lost = true
 			puts "Uh oh! The value of your hand has surpassed 21."
-			puts "Your bet of $#{@bet} has been deducted from your cash, leaving you with $#{@cash}", ""
+			puts "Your bet of $#{@hands[i].bet} has been deducted from your cash, leaving you with $#{@cash}", ""
 		end
-		def hit(card)
+		def hit(card, i)
 			puts "You chose to hit."
-			self.add_card(card)
-			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
-			self.check_hand
+			self.add_card(card, i)
+			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
+			self.check_hand(i)
 		end
-		def stand(automatic=false)
-			@active = false
+		def stand(i, automatic=false)
+			@hands[i].active = false
 			if automatic
 				puts "You hit blackjack, so you automatically stand."
 			else
-				puts "You now stand."
+				puts "You chose to stand."
 			end
-			puts "You cannot take any more cards for this hand, and your total will stay at #{@hand.calc_value}.", ""
+			puts "You cannot take any more cards for this hand, and your total will stay at #{@hands[i].calc_value}.", ""
 		end
 		def double(card)
 			puts "You chose to double."
-			self.add_card(card)
-			@bet *= 2
-			@active = false
-			puts "Your bet is now $#{@bet}.", ""
-			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
-			self.check_hand
+			self.add_card(card, i)
+			@hands[i].bet *= 2
+			@hands[i].active = false
+			puts "Your bet is now $#{@hands[i].bet}.", ""
+			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
+			self.check_hand(i)
 		end
 		def split
 			puts "You chose to split", ""
-			if @hand.get(0).value == @hand.get(1).value
-				hand1, hand2 = @hand.split
-			end
+			first_hand = @hands[0]
+			hand1, hand2 = first_hand.split
+			@hands = [hand1, hand2]
 		end
-		def surrender
-			@cash -= @bet/2
-			@lost = true
-			@active = false
-			puts "You chose to surrender."
-			puts "You lost half of your $#{@bet} bet, leaving you with $#{@cash}.", ""
+		def surrender(i)
+			@cash -= @hands[i].bet/2
+			@hands[i].lost = true
+			@hands[i].active = false
+			puts "You chose to surrender hand \##{i+1}."
+			puts "You lost half of your $#{@hands[i].bet} bet, leaving you with $#{@cash}.", ""
 		end
-		def calc_score
-			return @hand.calc_value
+		def calc_score(i)
+			return @hands[i].calc_value
 		end
-		def win
-			@cash += @bet
-			puts "#{@name} won $#{@bet} and now has $#{@cash}!"
-			@active = false
+		def win(i)
+			@cash += @hands[i].bet
+			puts "#{@name} won $#{@hands[i].bet} from hand \##{i+1} and now has $#{@cash}!"
+			@hands[i].active = false
 		end
-		def lose
-			@lost = true
-			@cash -= @bet
-			puts "#{@name} didn't surpass the dealer and lost. #{@name}'s cash is now $#{@cash}."
+		def lose(i)
+			@hands[i].lost = true
+			@cash -= @hands[i].bet
+			puts "#{@name}'s hand \##{i+1} didn't surpass the dealer. #{@name} lost $#{@hands[i].bet} and now has $#{@cash}."
 		end
 	end
 end
