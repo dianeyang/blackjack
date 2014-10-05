@@ -30,9 +30,12 @@ module Blackjack
 				self.hit
 			end
 			if @hand.calc_value > 21
-				puts "The dealer got over 21! All remaining players win."
+				puts "The dealer got over 21!"
+				return 0
 			else
-				puts "The dealer has a total value of #{@hand.calc_value}."
+				score = @hand.calc_value
+				puts "The dealer has a total value of #{score}.", ""
+				return score
 			end
 		end
 	end

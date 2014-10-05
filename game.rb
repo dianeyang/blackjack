@@ -8,6 +8,14 @@ module Blackjack
 		def active_players
 			return @players.select {|player| player.active}
 		end
+		def eligible_players
+			return @players.select {|player| !player.lost}
+		end
+		def reset_player_states
+			@players.each do |player|
+				player.reset
+			end
+		end
 		def declare_bets
 			@players.each do |player|
 				puts "#{player.name}, what is your bet? You may bet an integer between 1 and 1000"
@@ -37,9 +45,7 @@ module Blackjack
 			puts ""
 		end
 		def do_moves
-			@players.each do |player|
-				next if !player.active
-
+			self.active_players.each do |player|
 				puts "#{player.name}, what do you want to do?"
 				puts "H: Hit (take a card)"
 				puts "E: Stand (end turn)"
@@ -66,10 +72,10 @@ module Blackjack
 			end
 		end
 		def determine_winners
-			@players.each do |player|
-				next if !player.lost
+			target = @dealer.reveal
+			self.eligible_players.each do |player|
 				score = player.calc_score
-				if score > dealer.get_value && score <= 21
+				if score > target && score <= 21
 					player.win
 				else
 					player.lose
@@ -78,6 +84,7 @@ module Blackjack
 		end
 		def play
 			while true
+				self.reset_player_states
 				# each player makes bets
 				self.declare_bets
 
@@ -91,7 +98,6 @@ module Blackjack
 				end
 
 				# the dealer reveals the hole card and hits until 17
-				@dealer.reveal
 
 				# whoever won gets their bet
 				self.determine_winners

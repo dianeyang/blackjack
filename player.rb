@@ -13,6 +13,12 @@ module Blackjack
 			@lost = false
 			@name = name
 		end
+		def reset
+			@bet = nil
+			@hand = Blackjack::Hand.new
+			@active = true
+			@lost = false
+		end
 		def add_card(card)
 			@hand.add_card(card)
 		end
@@ -56,7 +62,7 @@ module Blackjack
 			puts "You chose to split", ""
 		end
 		def surrender
-			@cash -= 0.5 * @bet
+			@cash -= @bet/2
 			@lost = true
 			@active = false
 			puts "You chose to surrender."
