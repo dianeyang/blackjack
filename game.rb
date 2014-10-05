@@ -38,38 +38,42 @@ module Blackjack
 				card2 = @dealer.deal_one
 				player.add_card(card1)
 				player.add_card(card2)
-				puts "#{player.name} got dealt a #{card1.type} of #{card1.suit} and a #{card2.type} of #{card2.suit}."
+				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
 			end
 			faceup = @dealer.deal_to_self
-			puts "The dealer has a #{faceup.type} of #{faceup.suit} and a face-down card."
+			puts "The dealer has a #{faceup.type} #{faceup.suit} and a face-down card."
 			puts ""
 		end
 		def do_moves
 			self.active_players.each do |player|
 				puts "#{player.name}, what do you want to do?"
-				puts "H: [H]it (take a card)"
+				puts "H: Hit (take a card)"
 				puts "E: Stand ([E]nd turn)"
-				if @round == 1
-					puts "D: [D]ouble (double bet, take one card, and stand)"
-					puts "S: [S]plit (If the 2 cards have equal value, separate them and make 2 hands)"
+				if @round == 0
+					puts "D: Double down (double bet, take one card, and stand)"
+					puts "S: Split (If the 2 cards have equal value, separate them and make 2 hands)"
 				end
 				puts "R: Surrender ([R]etire from game and lose half your bet)"
+				puts ""
+
+				player.print_stats
+
 				print "> "
 				move = $stdin.gets.chomp.downcase
 
-				case move
-				when "h"
+				case
+				when move == "h"
 					player.hit(@dealer.deal_one)
-				when "e"
+				when move == "e"
 					player.stand
-				when "d"
+				when move == "d" && @round == 0
 					player.double(@dealer.deal_one)
-				when "s"
+				when move == "s" && @round == 0
 					player.split
-				when "x"
+				when move == "r"
 					player.surrender
 				else
-					puts "invalid move"
+					puts "Invalid move. Please try again."
 				end
 			end
 		end
@@ -103,7 +107,11 @@ module Blackjack
 				# the dealer reveals the hole card and hits until 17
 
 				# whoever won gets their bet
-				self.determine_winners
+				if !self.eligible_players.empty?
+					self.determine_winners
+				else
+					puts "All players lost. Better luck next time!"
+				end
 
 				puts "Play another round? (Y/N)"
 				print "> "

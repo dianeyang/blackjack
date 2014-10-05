@@ -41,8 +41,11 @@ module Blackjack
 		def initialize(value=nil)
 			card = (1..10).to_a.sample
 			@value = card
-			@suit = ["H", "C", "D", "S"].sample
+			@suit = ["<3", "o8<", "<>", "<8<"].sample
 			@type = card
+		end
+		def print_card
+			return "#{@type} #{@suit}"
 		end
 	end
 end

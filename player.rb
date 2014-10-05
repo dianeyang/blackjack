@@ -22,6 +22,11 @@ module Blackjack
 		def add_card(card)
 			@hand.add_card(card)
 		end
+		def print_stats
+			puts "Cash: $#{@cash}"
+			puts "Current bet: $#{@bet}"
+			puts "Hand: " + @hand.print_hand
+		end
 		def bust
 			@cash -= @bet
 			@active = false
@@ -30,9 +35,9 @@ module Blackjack
 			puts "Your bet of $#{@bet} has been deducted from your cash, leaving you with $#{@cash}", ""
 		end
 		def hit(card)
-			self.add_card(card)
 			puts "You chose to hit."
-			puts "#{@name} got dealt a #{card.type} of #{card.suit}.", ""
+			self.add_card(card)
+			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
 			if @hand.calc_value > 21
 				self.bust
 			end
@@ -49,7 +54,7 @@ module Blackjack
 			end
 			puts "You chose to double."
 			self.add_card(card)
-			puts "You got dealt a #{card.type} of #{card.suit}."
+			puts "#{@name} got dealt a #{card.type} #{card.suit}.", ""
 			if @hand.calc_value > 21
 				self.bust
 				return
