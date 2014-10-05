@@ -91,7 +91,7 @@ module Blackjack
 			if automatic
 				puts "You hit blackjack, so you automatically stand."
 			else
-				puts "You chose to stand."
+				puts "You now stand."
 			end
 			puts "You cannot take any more cards for this hand, and your total will stay at #{@hand.calc_value}.", ""
 		end
