@@ -1,14 +1,16 @@
 module Blackjack
 	class Dealer
-		def initialize
-			@dealt_cards = nil
-			@deck = nil
+		def initialize(deck)
+			@hand = Array.new
+			@deck = deck
 		end
 		def deal_one
-			puts 'dealing 1'
+			return @deck.remove_card
 		end
-		def deal_two
-			puts 'dealing 2'
-		end
+		def deal_to_self
+			@hand << @deck.remove_card
+			@hand << @deck.remove_card
+			return @hand[0]
+		end 
 	end
 end

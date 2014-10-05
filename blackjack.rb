@@ -1,4 +1,7 @@
-require "./game"
+require './game'
 require './table'
 require './player'
 require './dealer'
+require './hand'
+require './deck'
+require './card'

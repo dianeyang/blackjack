@@ -35,11 +35,14 @@ spade = """
 
 module Blackjack
 	class Card
-		attr_accessor :value
-		attr_accessor :suit
-		def initialize(value, suit)
-			@value = value
-			@suit = suit
+		attr_reader :value
+		attr_reader :suit
+		attr_reader :type
+		def initialize(value=nil)
+			card = (1..10).to_a.sample
+			@value = card
+			@suit = ["H", "C", "D", "S"].sample
+			@type = card
 		end
 	end
 end

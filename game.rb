@@ -12,16 +12,27 @@ module Blackjack
 				puts "You currently have $#{player.cash}"
 				print "> "
 				bet = $stdin.gets.chomp.to_i
+				while bet > player.cash
+					puts "Sorry, you don't have enough money to bet $#{bet}."
+					puts "You currently have $#{player.cash}"
+					print "> "
+					bet = $stdin.gets.chomp.to_i
+				end
 				player.bet = bet
 				puts "Your bet is #{bet}", ""
 			end
 		end
-		# def distribute_cards
-		# 	@players.each do |player|
-		# 		player.set_cards(@dealer.deal_two)
-		# 	end
-		# 	@dealer.deal_to_self
-		# end
+		def distribute_cards
+			@players.each do |player|
+				card1 = @dealer.deal_one
+				card2 = @dealer.deal_one
+				player.add_card(card1)
+				player.add_card(card2)
+				puts "#{player.name} got dealt a #{card1.type} of #{card1.suit} and a #{card2.type} of #{card2.suit}."
+			end
+			faceup = @dealer.deal_to_self
+			puts "The dealer has a #{faceup.type} of #{faceup.suit} and a face-down card."
+		end
 		# def do_moves
 		# 	@players.each do |player|
 		# 		if !player.active

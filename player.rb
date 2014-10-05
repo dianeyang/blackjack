@@ -14,14 +14,8 @@ module Blackjack
 		def do_move(move)
 			
 		end
-		def get_value
-			total = 0
-			@hand.each do |card|
-				total += card.value
-			end
-			return total
-		end
-		def add_to_hand
+		def add_card(card)
+			@hand << card
 		end
 		def hit(card)
 			self.add_to_hand(card)

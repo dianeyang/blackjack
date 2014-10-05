@@ -27,6 +27,7 @@ players.each_with_index do |item, i|
 	puts "Nice to meet you, #{name}!", ""
 end
 table = Blackjack::Table.new
-dealer = Blackjack::Dealer.new
+deck = Blackjack::Deck.new
+dealer = Blackjack::Dealer.new(deck)
 
 Blackjack::Game.new(players, table, dealer).play
