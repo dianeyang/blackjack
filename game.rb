@@ -1,10 +1,12 @@
 module Blackjack
 	class Game
-		def initialize(players, table, dealer)
+		def initialize(players, dealer)
 			@players = players
-			@table = table
 			@dealer = dealer
 			@round = 0
+		end
+		def active_players
+			return @players.select {|player| player.active}
 		end
 		def declare_bets
 			@players.each do |player|
@@ -32,59 +34,47 @@ module Blackjack
 			end
 			faceup = @dealer.deal_to_self
 			puts "The dealer has a #{faceup.type} of #{faceup.suit} and a face-down card."
+			puts ""
 		end
 		def do_moves
-			puts "moves"
-			$stdin.gets
+			@players.each do |player|
+				next if !player.active
+
+				puts "#{player.name}, what do you want to do?"
+				puts "H: Hit (take a card)"
+				puts "E: Stand (end turn)"
+				puts "D: Double (double bet, take one card, and stand)"
+				puts "S: Split (If the 2 cards have equal value, separate them and make 2 hands"
+				puts "X: Surrender (Give up a half-bet and retire from game)"
+				print "> "
+				move = $stdin.gets.chomp.downcase
+
+				case move
+				when "h"
+					player.hit(@dealer.deal_one)
+				when "e"
+					player.stand
+				when "d"
+					player.double(@dealer.deal_one)
+				when "s"
+					player.split
+				when "x"
+					player.surrender
+				else
+					puts "invalid move"
+				end
+			end
 		end
-		# 	@players.each do |player|
-		# 		if !player.active
-		# 			return
-
-		# 		puts "What do you want to do?"
-		# 		puts "H: Hit (take a card)"
-		# 		puts "E: Stand (end turn)"
-		# 		puts "D: Double (double bet and take one card)"
-		# 		puts "S: Split (If the 2 cards have equal value, separate them and make 2 hands"
-		# 		puts "X: Surrender (Give up a half-bet and retire from game)"
-		# 		print "> "
-		# 		move = $stdin.gets.chomp.downcase
-		# 		puts "You chose #{move}", ""
-
-		# 		case move
-		# 		when "h"
-		# 			player.hit(@dealer.deal_one)
-		# 		when "e"
-		# 			player.stand
-		# 		when "d"
-		# 			can_double = player.double(@dealer.deal_one)
-		# 			if !can_double
-		# 				puts "Sorry, you don't have enough cash to double"
-		# 			end
-		# 		when "s"
-		# 			# derp
-		# 		when "x"
-		# 			player.surrender
-		# 		else
-		# 			puts "invalid move"
-		# 		end
-
-		# 		still_in = player.do_move(move)
-		# 		if !still_in
-		# 			@remaining_players
-		# 		end
-		# 	end
-		# end
-		# def determine_winners
-		# 	@remaining_players.each do |player|
-		# 		value = player.get_value
-		# 		if value > dealer.get_value && value <= 21
-		# 			player.update_cash(player.bet)
-		# 		end
-		# 	end
-		# 
-		def active_players
-			return @players.select {|player| player.active}
+		def determine_winners
+			@players.each do |player|
+				next if !player.lost
+				score = player.calc_score
+				if score > dealer.get_value && score <= 21
+					player.win
+				else
+					player.lose
+				end
+			end
 		end
 		def play
 			while true
@@ -96,14 +86,23 @@ module Blackjack
 				self.distribute_cards
 
 				# # players go around the table deciding what moves to make
-				while self.active_players
+				while !self.active_players.empty?
 				 	self.do_moves
 				end
 
-				# # whoever won gets their bet
-				# self.determine_winners
-				# end
-				return
+				# the dealer reveals the hole card and hits until 17
+				@dealer.reveal
+
+				# whoever won gets their bet
+				self.determine_winners
+
+				puts "Play another round? (Y/N)"
+				print "> "
+				response = $stdin.gets.chomp.downcase
+				if response == "n"
+					puts "Thanks for playing Blackjack!"
+					break
+				end
 			end
 		end
 	end

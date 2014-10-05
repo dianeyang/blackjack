@@ -26,8 +26,7 @@ players.each_with_index do |item, i|
 	players[i] = Blackjack::Player.new(name)
 	puts "Nice to meet you, #{name}!", ""
 end
-table = Blackjack::Table.new
 deck = Blackjack::Deck.new
 dealer = Blackjack::Dealer.new(deck)
 
-Blackjack::Game.new(players, table, dealer).play
+Blackjack::Game.new(players, dealer).play
