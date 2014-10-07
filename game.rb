@@ -3,6 +3,7 @@ module Blackjack
 		def initialize(players)
 			@players = players
 			@dealer = Blackjack::Dealer.new
+			@turn = 0
 			@round = 0
 		end
 		def active_players
@@ -10,6 +11,9 @@ module Blackjack
 		end
 		def eligible_players
 			return @players.select {|player| !player.has_lost}
+		end
+		def non_bankrupt_players
+			return @players.select {|player| player.cash > 0 }
 		end
 		def reset_game
 			@players.each do |player|
@@ -19,7 +23,7 @@ module Blackjack
 				end
 				player.reset
 			end
-			@round = 0
+			@turn = 0
 		end
 		def declare_bets
 			self.active_players.each do |player|
@@ -27,13 +31,18 @@ module Blackjack
 				puts "You currently have $#{player.cash}"
 				print "> "
 				bet = $stdin.gets.chomp.to_i
-				while bet > player.cash
-					puts "Sorry, you don't have enough money to bet $#{bet}."
-					puts "You currently have $#{player.cash}"
+				while bet > player.cash || bet <= 0
+					puts ""
+					if bet > player.cash
+						puts "Sorry, you don't have enough money to bet $#{bet}. Please try again."
+						puts "You currently have $#{player.cash}"
+					elsif bet <= 0
+						puts "Invalid bet. Please try again."
+					end
 					print "> "
 					bet = $stdin.gets.chomp.to_i
 				end
-				player.hands[0].bet = bet
+				player.set_bet(0, bet)
 				puts "Your bet is #{bet}", ""
 			end
 		end
@@ -52,11 +61,13 @@ module Blackjack
 		end
 		def do_moves
 			self.active_players.each do |player|
-				puts "#{player.name}'s turn:"
+				puts "==============================================="
+				puts "#{player.name}'s turn:".upcase
+				puts "===============================================", ""
 				player.hands.each_index do |i|
 					next if !player.hands[i].active
 					puts "Hand \##{i+1}:"
-					move = player.get_move(@round, i)
+					move = player.get_move(@turn, i)
 					self.handle_decision(move, player, i)
 				end
 			end
@@ -68,7 +79,7 @@ module Blackjack
 			when move == "e"
 				player.stand(i)
 			when move == "d"
-				player.double(@dealer.deal_one, i)
+				player.double(@dealer.deal_one)
 			when move == "s"
 				player.split
 			when move == "r"
@@ -80,8 +91,20 @@ module Blackjack
 				puts "All players lost. Better luck next time!"
 				return
 			end
+			puts "===============================================", ""
 			puts "All players have either bust, surrendered, or are standing."
-			puts "Time to determine winners among the remaining #{self.eligible_players.length} players.", ""
+			puts "Time to determine winners among the remaining #{self.eligible_players.length} players!", ""
+			puts """
+               \\`\\/\\/\\/`/
+                )======(
+              .'        '.
+             /    _||__   \\
+            /    (_||_     \\
+           |     __||_)     |
+           |       ||       |
+           '.              .'
+             '------------'
+			"""
 			target = @dealer.reveal
 			self.eligible_players.each do |player|
 				player.hands.each_index do |i|
@@ -100,10 +123,11 @@ module Blackjack
 		def play
 			while true
 				self.reset_game
-				if self.active_players.length == 0
-					puts "No one has cash left. Guess it's game over. Thanks for playing!"
-					break
-				end
+
+				puts "==============================================="
+				puts "ROUND #{@round+1}"
+				puts "===============================================", ""
+
 				# each player makes bets
 				self.declare_bets
 
@@ -114,20 +138,27 @@ module Blackjack
 				# players go around the table deciding what moves to make
 				while !self.active_players.empty?
 				 	self.do_moves
-				 	@round += 1
+				 	@turn += 1
 				end
 				# the dealer reveals the hole card and hits until 17
 
 				# whoever won gets their bet
 				self.determine_winners
 
-				puts "Play another round? (Y/N)"
+				if self.non_bankrupt_players.length == 0
+					puts "No one has cash left. Guess it's game over. Thanks for playing!"
+					break
+				end
+
+				puts "", "Play another round? (Y/N)"
 				print "> "
 				response = $stdin.gets.chomp.downcase
 				if response == "n"
 					puts "Thanks for playing Blackjack!"
 					break
 				end
+				puts ""
+				@round += 1
 			end
 		end
 	end

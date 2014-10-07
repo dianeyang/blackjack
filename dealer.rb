@@ -25,8 +25,10 @@ module Blackjack
 			return @hand.calc_value
 		end
 		def reveal
+			up_card = @hand.get(0)
+			puts "The dealer already had a #{up_card.type} #{up_card.suit}."
 			hole_card = @hand.get(1)
-			puts "The dealer revealed the hole card: a #{hole_card.type} of #{hole_card.suit}."
+			puts "The dealer revealed the hole card: a #{hole_card.type} #{hole_card.suit}."
 			while @hand.calc_value < 17
 				self.hit
 			end

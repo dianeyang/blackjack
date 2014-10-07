@@ -21,16 +21,22 @@ module Blackjack
 				others && current.lost
 			end
 		end
+		def set_bet(i, bet)
+			@hands[i].bet = bet
+		end
+		def get_bet(i)
+			return @hands[i].bet
+		end
 		def add_card(card, i)
 			@hands[i].add_card(card)
 		end
 		def print_stats(i)
 			puts "Cash: $#{@cash}"
-			puts "Current bet: $#{@hands[i].bet}"
+			puts "Current bet: $#{self.get_bet(i)}"
 			puts "Hand: #{@hands[i].print_hand}"
 		end
 		def can_double_bet
-			return @hands[0].bet * 2 > @cash
+			return self.get_bet(0) * 2 > @cash
 		end
 		def get_move(round, i)
 			puts "#{@name}, what do you want to do with this hand?"
@@ -46,6 +52,7 @@ module Blackjack
 
 			valid = false
 			while !valid
+				puts ""
 				print "> "
 				move = $stdin.gets.chomp.downcase
 				valid = self.validate_move(move, round, i)
@@ -84,11 +91,11 @@ module Blackjack
 			end
 		end
 		def bust(i)
-			@cash -= @hands[i].bet
+			@cash -= self.get_bet(i)
 			@hands[i].active = false
 			@hands[i].lost = true
 			puts "Uh oh! The value of your hand has surpassed 21."
-			puts "Your bet of $#{@hands[i].bet} has been deducted from your cash, leaving you with $#{@cash}", ""
+			puts "Your bet of $#{self.get_bet(i)} has been deducted from your cash, leaving you with $#{@cash}", ""
 		end
 		def hit(card, i)
 			puts "You chose to hit."
@@ -107,12 +114,13 @@ module Blackjack
 		end
 		def double(card)
 			puts "You chose to double."
-			self.add_card(card, i)
-			@hands[i].bet *= 2
-			@hands[i].active = false
-			puts "Your bet is now $#{@hands[i].bet}.", ""
+			self.add_card(card, 0)
+			bet = self.get_bet(0)
+			self.set_bet(0, 2*bet)
+			@hands[0].active = false
+			puts "Your bet is now $#{2*bet}.", ""
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
-			self.check_hand(i)
+			self.check_hand(0)
 		end
 		def split
 			puts "You chose to split", ""
@@ -121,18 +129,18 @@ module Blackjack
 			@hands = [hand1, hand2]
 		end
 		def surrender(i)
-			@cash -= @hands[i].bet/2
+			@cash -= self.get_bet(i)/2
 			@hands[i].lost = true
 			@hands[i].active = false
 			puts "You chose to surrender hand \##{i+1}."
-			puts "You lost half of your $#{@hands[i].bet} bet, leaving you with $#{@cash}.", ""
+			puts "You lost half of your $#{self.get_bet(i)} bet, leaving you with $#{@cash}.", ""
 		end
 		def calc_score(i)
 			return @hands[i].calc_value
 		end
 		def win(i)
-			@cash += @hands[i].bet
-			puts "#{@name} won $#{@hands[i].bet} from hand \##{i+1} and now has $#{@cash}!"
+			@cash += self.get_bet(i,bet)
+			puts "#{@name} won $#{self.get_bet(i)} from hand \##{i+1} and now has $#{@cash}!"
 			@hands[i].active = false
 		end
 		def tie(i)
@@ -140,8 +148,9 @@ module Blackjack
 		end
 		def lose(i)
 			@hands[i].lost = true
-			@cash -= @hands[i].bet
-			puts "#{@name}'s hand \##{i+1} didn't surpass the dealer. #{@name} lost $#{@hands[i].bet} and now has $#{@cash}."
+			bet = self.get_bet(i)
+			@cash -= bet
+			puts "#{@name}'s hand \##{i+1} didn't surpass the dealer. #{@name} lost $#{bet} and now has $#{@cash}."
 		end
 	end
 end

@@ -9,7 +9,6 @@ def main
 	 |____/|_|\\__,_|\\___|_|\\_\\/ |\\__,_|\\___|_|\\_\\
 	                        |__/  by Diane Yang
 	"""
-
 	puts "\n\n"
 	puts "Hello there, lucky ladies and gents! I'll be your dealer tonight."
 	puts "But first, how many players are at the table?"

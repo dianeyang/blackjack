@@ -10,7 +10,7 @@ module Blackjack
 			@bet = bet
 			@active = true
 			@lost = false
-			@has_ace = !cards.select {|card| card.type === "A"}.empty?
+			@n_aces = cards.select {|card| card.type === "A"}.length
 		end
 		def get(index)
 			return @cards[index]
