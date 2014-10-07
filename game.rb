@@ -38,6 +38,7 @@ module Blackjack
 			end
 		end
 		def distribute_cards
+			@dealer.deck.shuffle
 			self.active_players.each do |player|
 				card1 = @dealer.deal_one
 				card2 = @dealer.deal_one

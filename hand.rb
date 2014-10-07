@@ -10,6 +10,7 @@ module Blackjack
 			@bet = bet
 			@active = true
 			@lost = false
+			@has_ace = !cards.select {|card| card.type === "A"}.empty?
 		end
 		def get(index)
 			return @cards[index]
@@ -21,6 +22,9 @@ module Blackjack
 			@cards = Array.new
 		end
 		def add_card(card)
+			if card.type === "A"
+				@has_ace = true
+			end
 			@cards << card
 		end
 		def split
@@ -30,8 +34,12 @@ module Blackjack
 		end
 		def print_hand
 			string = ""
-			@cards.each do |card|
-				string += card.print_card + ", "
+			ncards = self.get_size
+			@cards.each_with_index do |card, i|
+				string += card.print_card
+				if i != ncards-1
+					string += ", "
+				end
 			end
 			string += "\n"
 			return string

@@ -1,5 +1,6 @@
 module Blackjack
 	class Dealer
+		attr_accessor :deck
 		def initialize
 			@hand = Blackjack::Hand.new
 			@deck = Blackjack::Deck.new
