@@ -41,5 +41,8 @@ module Blackjack
 				return score
 			end
 		end
+		def replenish_deck(cards)
+			@deck.replenish(cards)
+		end
 	end
 end

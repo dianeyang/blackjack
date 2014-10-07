@@ -32,16 +32,18 @@ module Blackjack
 			hand2 = Blackjack::Hand.new([self.get(1)], @bet)
 			return hand1, hand2
 		end
-		def print_hand
+		def to_string
 			string = ""
 			ncards = self.get_size
-			@cards.each_with_index do |card, i|
-				string += card.print_card
-				if i != ncards-1
-					string += ", "
+			strings = @cards.map {|card| card.to_string}
+			all_lines = strings.map {|string| string.split("\n")}
+			n_lines = all_lines[0].length
+			(0..n_lines-1).each do |i|
+				all_lines.each do |lines|
+					string += lines[i]
 				end
+				string += "\n"
 			end
-			string += "\n"
 			return string
 		end
 		def calc_value

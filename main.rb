@@ -14,8 +14,14 @@ def main
 	puts "But first, how many players are at the table?"
 	print "> "
 	nplayers = $stdin.gets.chomp.to_i
-	while nplayers <= 0
-		puts "Invalid number of players. Please try again."
+	while nplayers <= 0 || nplayers > 10
+		if nplayers <= 0
+			print "Invalid number of players."
+		elsif nplayers > 10
+			print "Sorry, we only have room for up to 10 people."
+		end
+		puts " Please try again."
+		print "> "
 		nplayers = $stdin.gets.chomp.to_i
 	end
 

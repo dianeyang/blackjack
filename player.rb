@@ -33,7 +33,7 @@ module Blackjack
 		def print_stats(i)
 			puts "Cash: $#{@cash}"
 			puts "Current bet: $#{self.get_bet(i)}"
-			puts "Hand: #{@hands[i].print_hand}"
+			puts "Hand: #{@hands[i].to_string}"
 		end
 		def can_double_bet
 			return self.get_bet(0) * 2 > @cash
@@ -110,7 +110,7 @@ module Blackjack
 			else
 				puts "You chose to stand."
 			end
-			puts "You cannot take any more cards for this hand, and your total will stay at #{@hands[i].calc_value}.", ""
+			puts "You cannot take any more cards for this hand.", ""
 		end
 		def double(card)
 			puts "You chose to double."
@@ -139,7 +139,7 @@ module Blackjack
 			return @hands[i].calc_value
 		end
 		def win(i)
-			@cash += self.get_bet(i,bet)
+			@cash += self.get_bet(i)
 			puts "#{@name} won $#{self.get_bet(i)} from hand \##{i+1} and now has $#{@cash}!"
 			@hands[i].active = false
 		end
@@ -151,6 +151,13 @@ module Blackjack
 			bet = self.get_bet(i)
 			@cash -= bet
 			puts "#{@name}'s hand \##{i+1} didn't surpass the dealer. #{@name} lost $#{bet} and now has $#{@cash}."
+		end
+		def get_all_cards
+			cards = Array.new
+			@hands.each do |hand|
+				cards.concat(hand.cards)
+			end
+			return cards
 		end
 	end
 end

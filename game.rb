@@ -66,7 +66,7 @@ module Blackjack
 				puts "===============================================", ""
 				player.hands.each_index do |i|
 					next if !player.hands[i].active
-					puts "Hand \##{i+1}:"
+					puts "Hand \##{i+1}:".upcase
 					move = player.get_move(@turn, i)
 					self.handle_decision(move, player, i)
 				end
@@ -120,6 +120,14 @@ module Blackjack
 				end
 			end
 		end
+		def discard_cards
+			to_discard = Array.new
+			@players.each do |player|
+				to_discard.concat(player.get_all_cards)
+				player.reset
+			end
+			@dealer.replenish_deck(to_discard)
+		end
 		def play
 			while true
 				self.reset_game
@@ -149,6 +157,8 @@ module Blackjack
 					puts "No one has cash left. Guess it's game over. Thanks for playing!"
 					break
 				end
+
+				self.discard_cards
 
 				puts "", "Play another round? (Y/N)"
 				print "> "
