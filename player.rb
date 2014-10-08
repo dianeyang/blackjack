@@ -51,13 +51,13 @@ module Blackjack
 			puts ""
 			self.print_stats(i)
 
-			valid = false
-			while !valid
+			begin
 				puts ""
 				print "> "
 				move = $stdin.gets.chomp.downcase
 				valid = self.validate_move(move, round, i)
-			end
+			end while !valid
+			
 			return move
 		end
 		def validate_move(move, round, i)
@@ -85,10 +85,10 @@ module Blackjack
 		end
 		def check_hand(i)
 			min_value = @hands[i].min_value
-			max_value = @hands[i].max_value
+			clamped = @hands[i].clamp_value(21, 21)
 			if min_value > 21
 				self.bust(i)
-			elsif min_value <= 21 && (max_value - 21) % 10 == 0
+			elsif clamped > 0
 				self.stand(i, true)
 			end
 		end

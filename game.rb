@@ -30,9 +30,10 @@ module Blackjack
 			self.active_players.each do |player|
 				puts "#{player.name}, what is your bet? You may bet an integer between 1 and 1000"
 				puts "You currently have $#{player.cash}"
-				print "> "
-				bet = $stdin.gets.chomp.to_i
-				while bet > player.cash || bet <= 0
+
+				begin
+					print "> "
+					bet = $stdin.gets.chomp.to_i
 					puts ""
 					if bet > player.cash
 						puts "Sorry, you don't have enough money to bet $#{bet}. Please try again."
@@ -40,9 +41,8 @@ module Blackjack
 					elsif bet <= 0
 						puts "Invalid bet. Please try again."
 					end
-					print "> "
-					bet = $stdin.gets.chomp.to_i
-				end
+				end while bet > player.cash || bet <= 0
+
 				player.set_bet(0, bet)
 				puts "Your bet is #{bet}", ""
 			end
@@ -164,11 +164,19 @@ module Blackjack
 
 				puts "Play another round? (Y/N)"
 				print "> "
-				response = $stdin.gets.chomp.downcase
-				if response == "n"
-					puts "Thanks for playing Blackjack!"
-					break
-				end
+				begin
+					response = $stdin.gets.chomp.downcase
+					puts ""
+					if response == "n"
+						puts "Thanks for playing Blackjack!"
+						return
+					elsif response == 'y'
+						# something
+					else
+						puts "Invalid response. Please try again."
+					end
+				end while response != 'n' && response != 'y'
+
 				puts ""
 				@round += 1
 			end

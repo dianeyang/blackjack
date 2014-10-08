@@ -12,18 +12,18 @@ def main
 	puts "\n\n"
 	puts "Hello there, lucky ladies and gents! I'll be your dealer tonight."
 	puts "But first, how many players are at the table?"
-	print "> "
-	nplayers = $stdin.gets.chomp.to_i
-	while nplayers <= 0 || nplayers > 10
+
+	begin
+		print "> "
+		nplayers = $stdin.gets.chomp.to_i
+		puts ""
 		if nplayers <= 0
 			print "Invalid number of players."
 		elsif nplayers > 10
 			print "Sorry, we only have room for up to 10 people."
 		end
 		puts " Please try again."
-		print "> "
-		nplayers = $stdin.gets.chomp.to_i
-	end
+	end while nplayers <= 0 || nplayers > 10
 
 	puts "#{nplayers} players? Sounds good. What are your names?", ""
 
