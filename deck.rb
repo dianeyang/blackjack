@@ -22,6 +22,7 @@ module Blackjack
 			end 
 			return @cards.shift
 		end
+		# replenish: shuffle discarded cards back into the deck
 		def replenish(discarded)
 			@cards.concat(discarded)
 			self.shuffle

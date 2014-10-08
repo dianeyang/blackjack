@@ -38,6 +38,8 @@ module Blackjack
 			hand2 = Blackjack::Hand.new([self.get(1)], @bet)
 			return hand1, hand2
 		end
+		# clamp_value: test if some interpretation of the hand has a value
+		# that lies between min and max (inclusive).
 		def clamp_value(min, max)
 			value = @min_value
 			n_aces = @n_aces

@@ -37,9 +37,6 @@ module Blackjack
 			puts "Current bet: $#{self.get_bet(i)}"
 			puts "Hand: #{@hands[i].to_string}"
 		end
-		def can_double_bet
-			return self.get_bet(0) * 2 > @cash
-		end
 		def get_move(round, i)
 			puts "#{@name}, what do you want to do with this hand?"
 			puts "H: Hit (take a card)"
@@ -77,20 +74,22 @@ module Blackjack
 				puts "Sorry, you can't split because your cards are not the same type."
 				return false
 			end
-			not_enough_cash = (move == "d" || move == "s") && self.can_double_bet
+			not_enough_cash = (move == "d" || move == "s") && (self.get_bet(0) * 2 > @cash)
 			if not_enough_cash
 				puts "Sorry, you don't have enough cash to make that move. Please try again."
 				return false
 			end
 			return true
 		end
+		# check_hand: check if the player should retire, either because he/she has bust,
+		# or because he/she has reached exactly 21.
 		def check_hand(i)
 			min_value = @hands[i].min_value
 			clamped = @hands[i].clamp_value(21, 21)
 			if min_value > 21
 				self.bust(i)
-			elsif clamped > 0
-				self.stand(i, true)
+			elsif clamped > 0 # Value of hand is 21
+				self.stand(i, true, @hands[i].is_blackjack)
 			end
 		end
 		def bust(i)
@@ -105,10 +104,12 @@ module Blackjack
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
 			self.add_card(card, i)
 		end
-		def stand(i, automatic=false)
+		def stand(i, automatic=false, blackjack=false)
 			@hands[i].active = false
-			if automatic
-				puts "#{@name} hit 21 and AUTOMATICALLY STANDS."
+			if blackjack
+				puts "#{@name} got a blackjack and automatically stands."
+			elsif automatic
+				puts "#{@name} hit 21 and automatically stands."
 			else
 				puts "You chose to stand."
 			end
@@ -136,12 +137,9 @@ module Blackjack
 			puts "You chose to surrender hand \##{i+1}."
 			puts "You lost half of your $#{self.get_bet(i)} bet, leaving you with $#{@cash}.", ""
 		end
-		def clamp_value(target, i)
-			@hands[i].clamp_value(target, 21)
-		end
 		def win(i)
 			@cash += self.get_bet(i)
-			puts "#{@name} won $#{self.get_bet(i)} from hand \##{i+1} and now has $#{@cash}!"
+			puts "#{@name} surpassed the dealer and won $#{self.get_bet(i)} from hand \##{i+1}. #{@name} now has $#{@cash}!"
 			@hands[i].active = false
 		end
 		def tie(i)

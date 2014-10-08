@@ -82,8 +82,8 @@ module Blackjack
 		def distribute_cards
 			@dealer.shuffle_deck
 			self.active_players.each do |player|
-				card1 = @dealer.deal_one
-				card2 = @dealer.deal_one
+				card1 = Card.new(10, "<>")
+				card2 = Card.new('A', "<>")
 				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
 				player.add_card(card1, 0)
 				player.add_card(card2, 0)
@@ -142,7 +142,7 @@ module Blackjack
 			self.eligible_players.each do |player|
 				player.hands.each_index do |i|
 					next if player.hands[i].lost
-					value = player.clamp_value(target, i)
+					value = player.hands[i].clamp_value(target, 21)
 					if value < 0 # there was no value between target and 21
 						player.lose(i)
 					elsif value > target || (player.hands[i].is_blackjack && !@dealer.hand.is_blackjack)

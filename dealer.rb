@@ -1,11 +1,12 @@
 module Blackjack
 	class Dealer
+		attr_reader :hand
 		def initialize
-			@hand = Blackjack::Hand.new
-			@deck = Blackjack::Deck.new
+			@hand = Hand.new
+			@deck = Deck.new
 		end
 		def reset
-			@hand = Blackjack::Hand.new
+			@hand = Hand.new
 		end
 		def deal_one
 			return @deck.remove_card
@@ -33,6 +34,9 @@ module Blackjack
 			if value > 21
 				puts "The dealer got over 21! All remaining players win their bets."
 				return 0
+			elsif value == 21 && @hand.get_size > 2
+				puts "The dealer has a total value of #{value} (though not a blackjack)."
+				return value
 			else
 				puts "The dealer has a total value of #{value}.", ""
 				return value
