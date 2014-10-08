@@ -131,8 +131,6 @@ module Blackjack
 		end
 		def play
 			while true
-				self.reset_game
-
 				puts "==============================================="
 				puts "ROUND #{@round+1}"
 				puts "===============================================", ""
@@ -160,6 +158,7 @@ module Blackjack
 				end
 
 				self.discard_cards
+				self.reset_game
 
 				puts "Play another round? (Y/N)"
 				print "> "

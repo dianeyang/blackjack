@@ -28,19 +28,21 @@ module Blackjack
 			puts "The dealer already had a #{up_card.type} #{up_card.suit}."
 			hole_card = @hand.get(1)
 			puts "The dealer revealed the hole card: a #{hole_card.type} #{hole_card.suit}."
-			while @hand.max_value < 17
+			value = @hand.max_value
+			while value < 17
 				self.hit
+				value = @hand.max_value
 			end
-			if @hand.max_value > 21
+			if value > 21
 				puts "The dealer got over 21! All remaining players win their bets."
 				return 0
 			else
 				puts "The dealer has a total value of #{value}.", ""
-				return max_value
+				return value
 			end
 		end
 		def shuffle_deck
-			@deck = @deck.shuffle
+			@deck.shuffle
 		end
 		def replenish_deck(cards)
 			cards.concat(@hand.cards)

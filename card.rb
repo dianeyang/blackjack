@@ -16,38 +16,47 @@ module Blackjack
 			end
 		end
 		def to_string
+			if @type == 10
+				top = 10
+				bottom = 10
+				pad = ""
+			else
+				top = @type.to_s + " "
+				bottom = @type.to_s
+				pad = " "
+			end
 			if @suit === "<3"
 				return """
-.------.
-|#{@type}_  _ |
-|( \\/ )|
-| \\  / |
-|  \\/ #{@type}|
-`------'\n"""
+.-------.
+|#{top}_  _ |
+| ( \\/ )|
+|  \\  / |
+|   \\/#{pad}#{bottom}|
+`-------'\n"""
 			elsif @suit === "<>"
 				return """
-.------.
-|#{@type} /\\  |
-| /  \\ |
-| \\  / |
-|  \\/ #{type}|
-`------'\n"""
+.-------.
+|#{top} /\\  |
+|  /  \\ |
+|  \\  / |
+|   \\/#{pad}#{bottom}|
+`-------'\n"""
             elsif @suit === "o8<"
         		return """
-.------.
-|#{@type} _   |
-| ( )  |
-|(_x_) |
-|  Y  #{@type}|
-`------'\n"""
+.-------.
+|#{top} _   |
+|  ( )  |
+| (_x_) |
+|   Y #{pad}#{bottom}|
+`-------'\n"""
 			else
 				return """
-.------.
-|#{@type} .   |
-| / \\  |
-|(_,_) |
-|  I  #{@type}|
-`------'\n"""
+.-------.
+|#{top} .   |
+|  / \\  |
+| (_,_) |
+|   I #{pad}#{bottom}|
+`-------'\n"""
 			end
 		end
 	end
