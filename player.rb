@@ -5,11 +5,11 @@ module Blackjack
 		attr_reader :hands
 		def initialize(name)
 			@cash = 1000
-			@hands = [Blackjack::Hand.new]
+			@hands = [Hand.new]
 			@name = name
 		end
 		def reset
-			@hands = [Blackjack::Hand.new]
+			@hands = [Hand.new]
 		end
 		def is_active
 			has_active_hand = @hands.reduce(false) do |others, current|
@@ -32,8 +32,11 @@ module Blackjack
 			@hands[i].add_card(card)
 			self.check_hand(i)
 		end
+		def format_cash
+			return "%.2f" % @cash.round(2)
+		end
 		def print_stats(i)
-			puts "Cash: $#{@cash}"
+			puts "Cash: $#{self.format_cash}"
 			puts "Current bet: $#{self.get_bet(i)}"
 			puts "Hand: #{@hands[i].to_string}"
 		end
@@ -97,7 +100,7 @@ module Blackjack
 			@hands[i].active = false
 			@hands[i].lost = true
 			puts "Uh oh! The value of your hand has surpassed 21."
-			puts "Your bet of $#{self.get_bet(i)} has been deducted from your cash, leaving you with $#{@cash}", ""
+			puts "Your bet of $#{self.get_bet(i)} has been deducted from your cash, leaving you with $#{self.format_cash}", ""
 		end
 		def hit(card, i)
 			puts "You chose to hit."
@@ -131,25 +134,25 @@ module Blackjack
 			@hands = [hand1, hand2]
 		end
 		def surrender(i)
-			@cash -= self.get_bet(i)/2
+			@cash -= self.get_bet(i)/2.0
 			@hands[i].lost = true
 			@hands[i].active = false
 			puts "You chose to surrender hand \##{i+1}."
-			puts "You lost half of your $#{self.get_bet(i)} bet, leaving you with $#{@cash}.", ""
+			puts "You lost half of your $#{self.get_bet(i)} bet, leaving you with $#{self.format_cash}.", ""
 		end
 		def win(i)
 			@cash += self.get_bet(i)
-			puts "#{@name} won $#{self.get_bet(i)} from hand \##{i+1}. #{@name} now has $#{@cash}!"
+			puts "#{@name} won $#{self.get_bet(i)} from hand \##{i+1}. #{@name} now has $#{self.format_cash}!"
 			@hands[i].active = false
 		end
 		def tie(i)
-			puts "#{@name}'s hand \##{i+1} tied with the dealer, neither winning nor losing money. #{@name} still has $#{@cash}."
+			puts "#{@name}'s hand \##{i+1} tied with the dealer, neither winning nor losing money. #{@name} still has $#{self.format_cash}."
 		end
 		def lose(i)
 			@hands[i].lost = true
 			bet = self.get_bet(i)
 			@cash -= bet
-			puts "#{@name}'s hand \##{i+1} didn't surpass the dealer. #{@name} lost $#{bet} and now has $#{@cash}."
+			puts "#{@name}'s hand \##{i+1} didn't surpass the dealer. #{@name} lost $#{bet} and now has $#{self.format_cash}."
 		end
 		def get_all_cards
 			cards = Array.new

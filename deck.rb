@@ -6,7 +6,7 @@ module Blackjack
 			cards = Array.new
 			types.each do |type|
 				suits.each do |suit|
-					cards << Blackjack::Card.new(type, suit)
+					cards << Card.new(type, suit)
 				end
 			end
 			# we use 2 decks of cards
