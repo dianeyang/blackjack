@@ -7,7 +7,7 @@ module Blackjack
 		attr_reader :current_value
 		attr_reader :min_value
 		attr_reader :n_aces
-		def initialize(cards=Array.new, bet=nil)
+		def initialize(cards=Array.new, bet=0)
 			@cards = cards
 			@bet = bet
 			@active = true
@@ -22,6 +22,9 @@ module Blackjack
 		end
 		def get_size
 			return @cards.length
+		end
+		def is_blackjack
+			return clamp_value(21, 21) && self.get_size == 2
 		end
 		def add_card(card)
 			if card.type === "A"

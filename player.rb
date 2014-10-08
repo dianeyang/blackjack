@@ -12,9 +12,10 @@ module Blackjack
 			@hands = [Blackjack::Hand.new]
 		end
 		def is_active
-			return @hands.reduce(false) do |others, current|
+			has_active_hand = @hands.reduce(false) do |others, current|
 				others || current.active
 			end
+			return has_active_hand && cash > 0
 		end
 		def has_lost
 			return @hands.reduce(true) do |others, current|
@@ -57,7 +58,7 @@ module Blackjack
 				move = $stdin.gets.chomp.downcase
 				valid = self.validate_move(move, round, i)
 			end while !valid
-			
+
 			return move
 		end
 		def validate_move(move, round, i)
@@ -73,7 +74,7 @@ module Blackjack
 			end
 			not_pair = move == "s" && @hands[0].get(0).type != @hands[0].get(1).type
 			if not_pair
-				puts "Sorry, you can't split because your cards do not have the same value."
+				puts "Sorry, you can't split because your cards are not the same type."
 				return false
 			end
 			not_enough_cash = (move == "d" || move == "s") && self.can_double_bet
@@ -107,7 +108,7 @@ module Blackjack
 		def stand(i, automatic=false)
 			@hands[i].active = false
 			if automatic
-				puts "#{@name} hit 21 and automatically stands."
+				puts "#{@name} hit 21 and AUTOMATICALLY STANDS."
 			else
 				puts "You chose to stand."
 			end

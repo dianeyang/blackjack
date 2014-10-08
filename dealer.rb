@@ -10,12 +10,9 @@ module Blackjack
 		def deal_one
 			return @deck.remove_card
 		end
-		def add_card(card)
-			@hand.add_card(card)
-		end
 		def hit
 			card = @deck.remove_card
-			self.add_card(card)
+			@hand.add_card(card)
 			puts "The dealer got dealt a #{card.type} of #{card.suit}."
 		end
 		def deal_to_self

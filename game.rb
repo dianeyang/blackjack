@@ -1,6 +1,39 @@
 module Blackjack
 	class Game
-		def initialize(players)
+		def initialize
+			puts """
+			  ____  _            _     _            _    
+			 | __ )| | __ _  ___| | __(_) __ _  ___| | __
+			 |  _ \\| |/ _` |/ __| |/ /| |/ _` |/ __| |/ /
+			 | |_) | | (_| | (__|   < | | (_| | (__|   < 
+			 |____/|_|\\__,_|\\___|_|\\_\\/ |\\__,_|\\___|_|\\_\\
+			                        |__/  by Diane Yang
+			"""
+			puts "\n\n"
+			puts "Hello there, lucky ladies and gents! I'll be your dealer tonight."
+			puts "But first, how many players are at the table?"
+
+			begin
+				print "> "
+				nplayers = $stdin.gets.chomp.to_i
+				puts ""
+				if nplayers <= 0
+					puts "Invalid number of players. Please try again."
+				elsif nplayers > 10
+					puts "Sorry, we only have room for up to 10 people. Please try again."
+				end
+			end while nplayers <= 0 || nplayers > 10
+
+			puts "#{nplayers} players? Sounds good. What are your names?", ""
+
+			players = Array.new(nplayers)
+			players.each_with_index do |item, i|
+				print "Player #{i+1}: "
+				name = $stdin.gets.chomp
+				players[i] = Blackjack::Player.new(name)
+				puts "Nice to meet you, #{name}!", ""
+			end
+
 			@players = players
 			@dealer = Blackjack::Dealer.new
 			@turn = 0
@@ -19,7 +52,6 @@ module Blackjack
 			@players.each do |player|
 				if player.cash <= 0
 					puts "Sorry #{player.name}, but you'll have to sit this out. You don't have any money left."
-					next
 				end
 				player.reset
 			end
@@ -29,7 +61,7 @@ module Blackjack
 		def declare_bets
 			self.active_players.each do |player|
 				puts "#{player.name}, what is your bet? You may bet an integer between 1 and 1000"
-				puts "You currently have $#{player.cash}"
+				puts "You currently have $#{player.cash}."
 
 				begin
 					print "> "
@@ -37,7 +69,7 @@ module Blackjack
 					puts ""
 					if bet > player.cash
 						puts "Sorry, you don't have enough money to bet $#{bet}. Please try again."
-						puts "You currently have $#{player.cash}"
+						puts "You currently have $#{player.cash}."
 					elsif bet <= 0
 						puts "Invalid bet. Please try again."
 					end
@@ -113,7 +145,7 @@ module Blackjack
 					value = player.clamp_value(target, i)
 					if value < 0 # there was no value between target and 21
 						player.lose(i)
-					elsif value > target
+					elsif value > target || (player.hands[i].is_blackjack && !@dealer.hand.is_blackjack)
 						player.win(i)
 					else
 						player.tie(i)
