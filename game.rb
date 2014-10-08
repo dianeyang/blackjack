@@ -110,12 +110,13 @@ module Blackjack
 			self.eligible_players.each do |player|
 				player.hands.each_index do |i|
 					next if player.hands[i].lost
-					if player.has_beat_dealer(target, i)
-						player.win(i)
-					elsif value == target
-						player.tie(i)
-					else
+					value = player.clamp_value(target, i)
+					if value < 0 # there was no value between target and 21
 						player.lose(i)
+					elsif value > target
+						player.win(i)
+					else
+						player.tie(i)
 					end
 				end
 			end
@@ -131,6 +132,8 @@ module Blackjack
 		end
 		def play
 			while true
+				self.reset_game
+
 				puts "==============================================="
 				puts "ROUND #{@round+1}"
 				puts "===============================================", ""
@@ -158,7 +161,6 @@ module Blackjack
 				end
 
 				self.discard_cards
-				self.reset_game
 
 				puts "Play another round? (Y/N)"
 				print "> "

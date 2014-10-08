@@ -107,7 +107,7 @@ module Blackjack
 		def stand(i, automatic=false)
 			@hands[i].active = false
 			if automatic
-				puts "You hit 21, so you automatically stand."
+				puts "#{@name} hit 21 and automatically stands."
 			else
 				puts "You chose to stand."
 			end
@@ -135,8 +135,8 @@ module Blackjack
 			puts "You chose to surrender hand \##{i+1}."
 			puts "You lost half of your $#{self.get_bet(i)} bet, leaving you with $#{@cash}.", ""
 		end
-		def has_beat_dealer(target, i)
-			@hands[i].in_range(target, 21)
+		def clamp_value(target, i)
+			@hands[i].clamp_value(target, 21)
 		end
 		def win(i)
 			@cash += self.get_bet(i)

@@ -35,17 +35,17 @@ module Blackjack
 			hand2 = Blackjack::Hand.new([self.get(1)], @bet)
 			return hand1, hand2
 		end
-		def in_range(min, max)
+		def clamp_value(min, max)
 			value = @min_value
 			n_aces = @n_aces
-			while value < min && n_aces > 0
+			while n_aces >= 0
+				if value >= min && value <= max
+					return value
+				end
 				value += 10
 				n_aces -= 1
 			end	
-			if value > max
-				return false
-			end
-			return true
+			return -1
 		end
 		def to_string
 			string = ""
