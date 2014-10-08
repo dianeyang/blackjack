@@ -28,7 +28,7 @@ module Blackjack
 			puts "The dealer already had a #{up_card.type} #{up_card.suit}."
 			hole_card = @hand.get(1)
 			puts "The dealer revealed the hole card: a #{hole_card.type} #{hole_card.suit}."
-			while @hand.max_value < 21
+			while @hand.max_value < 17
 				self.hit
 			end
 			if @hand.max_value > 21
