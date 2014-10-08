@@ -82,8 +82,8 @@ module Blackjack
 		def distribute_cards
 			@dealer.shuffle_deck
 			self.active_players.each do |player|
-				card1 = Card.new(10, "<>")
-				card2 = Card.new('A', "<>")
+				card1 = @dealer.deal_one
+				card2 = @dealer.deal_one
 				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
 				player.add_card(card1, 0)
 				player.add_card(card2, 0)
