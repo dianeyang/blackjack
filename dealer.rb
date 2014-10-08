@@ -17,8 +17,8 @@ module Blackjack
 			puts "The dealer got dealt a #{card.type} of #{card.suit}."
 		end
 		def deal_to_self
-			@hand.add_card(@deck.remove_card)
-			@hand.add_card(@deck.remove_card)
+			@hand.add_card(self.deal_one)
+			@hand.add_card(self.deal_one)
 			return @hand.get(0)
 		end 
 		def reveal
@@ -26,18 +26,31 @@ module Blackjack
 			puts "The dealer already had a #{up_card.type} #{up_card.suit}."
 			hole_card = @hand.get(1)
 			puts "The dealer revealed the hole card: a #{hole_card.type} #{hole_card.suit}."
-			value = @hand.max_value
-			while value < 17
+
+			# deal until dealer busts or gets between 17 and 21
+			while @hand.min_value <= 21
+				if @hand.clamp_value(17, 17) > 0 && @hand.n_aces > 0 # hit on soft 17
+					self.hit
+					value = 17 + @hand.get(-1).value
+					break
+				elsif @hand.clamp_value(17, 21) > 0 # hard 17 or anything 18 to 21
+					value = @hand.clamp_value(17, 21)
+					break
+				end
 				self.hit
-				value = @hand.max_value
 			end
-			if value > 21
+
+			if @hand.min_value > 21 # bust
 				puts "The dealer got over 21! All remaining players win their bets."
 				return 0
-			elsif value == 21 && @hand.get_size > 2
-				puts "The dealer has a total value of #{value} (though not a blackjack)."
+			elsif value == 21
+				if @hand.get_size == 2
+					puts "The dealer got a blackjack!"
+				else
+					puts "The dealer has a total value of #{value} (though not a blackjack)."
+				end
 				return value
-			else
+			else # below 21
 				puts "The dealer has a total value of #{value}.", ""
 				return value
 			end

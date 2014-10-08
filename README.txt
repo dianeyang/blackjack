@@ -13,9 +13,13 @@ There are many variations of Blackjack, so here are a few notes about this imple
 
 - This game uses 2 decks shuffled together.
 
-- The table is limited to 10 people because in real life, the dealer only has a certain number of cards and can therefore only support a game with a certain maximum number of people.
+- Players have the option to hit, stand, surrender, double down, or split on the first move. They can do any of these except the last 2 on subsequent moves.
 
-- The dealer stands on a soft 17. That is, aces always have value 11 for the dealer.
+- The table is limited to 10 people. This decision was made because in real life, the dealer only has a certain number of cards and can therefore only support a game with a certain maximum number of people.
+
+- The dealer hits on a soft 17.
+
+- A player automatically stands if he/she hits 21.
 
 - Players can bet any integer amount of money between 1 and their total cash. They are not allowed to be in the red. So, they cannot double down or split if they cannot afford it, and they're out of the game if they go bankrupt.
 
