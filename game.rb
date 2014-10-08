@@ -152,7 +152,7 @@ module Blackjack
 					value = player.hands[i].clamp_value(target, 21)
 					if value < 0 # there was no value between target and 21
 						player.lose(i)
-					elsif value > target || (player.hands[i].is_blackjack && !@dealer.hand.is_blackjack)
+					elsif value > target || (player.hands[i].is_blackjack && !@dealer.hand.is_blackjack) || value == 0
 						player.win(i)
 					else
 						player.tie(i)

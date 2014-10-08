@@ -139,7 +139,7 @@ module Blackjack
 		end
 		def win(i)
 			@cash += self.get_bet(i)
-			puts "#{@name} surpassed the dealer and won $#{self.get_bet(i)} from hand \##{i+1}. #{@name} now has $#{@cash}!"
+			puts "#{@name} won $#{self.get_bet(i)} from hand \##{i+1}. #{@name} now has $#{@cash}!"
 			@hands[i].active = false
 		end
 		def tie(i)
