@@ -14,8 +14,12 @@ module Blackjack
 		end
 		def shuffle
 			@cards = @cards.shuffle
+			puts "Shuffling the deck..."
 		end
 		def remove_card
+			if @cards.empty?
+				raise "Uh oh, the deck shouldn't be empty."
+			end 
 			return @cards.shift
 		end
 		def replenish(discarded)

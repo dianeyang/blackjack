@@ -1,9 +1,11 @@
 module Blackjack
 	class Dealer
-		attr_accessor :deck
 		def initialize
 			@hand = Blackjack::Hand.new
 			@deck = Blackjack::Deck.new
+		end
+		def reset
+			@hand = Blackjack::Hand.new
 		end
 		def deal_one
 			return @deck.remove_card
@@ -21,27 +23,27 @@ module Blackjack
 			@hand.add_card(@deck.remove_card)
 			return @hand.get(0)
 		end 
-		def calc_score
-			return @hand.calc_value
-		end
 		def reveal
 			up_card = @hand.get(0)
 			puts "The dealer already had a #{up_card.type} #{up_card.suit}."
 			hole_card = @hand.get(1)
 			puts "The dealer revealed the hole card: a #{hole_card.type} #{hole_card.suit}."
-			while @hand.calc_value < 17
+			while @hand.max_value < 21
 				self.hit
 			end
-			if @hand.calc_value > 21
+			if @hand.max_value > 21
 				puts "The dealer got over 21! All remaining players win their bets."
 				return 0
 			else
-				score = @hand.calc_value
-				puts "The dealer has a total value of #{score}.", ""
-				return score
+				puts "The dealer has a total value of #{value}.", ""
+				return max_value
 			end
 		end
+		def shuffle_deck
+			@deck = @deck.shuffle
+		end
 		def replenish_deck(cards)
+			cards.concat(@hand.cards)
 			@deck.replenish(cards)
 		end
 	end

@@ -23,6 +23,7 @@ module Blackjack
 				end
 				player.reset
 			end
+			@dealer.reset
 			@turn = 0
 		end
 		def declare_bets
@@ -47,13 +48,13 @@ module Blackjack
 			end
 		end
 		def distribute_cards
-			@dealer.deck.shuffle
+			@dealer.shuffle_deck
 			self.active_players.each do |player|
 				card1 = @dealer.deal_one
 				card2 = @dealer.deal_one
+				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
 				player.add_card(card1, 0)
 				player.add_card(card2, 0)
-				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
 			end
 			faceup = @dealer.deal_to_self
 			puts "The dealer has a #{faceup.type} #{faceup.suit} and a face-down card."
@@ -109,8 +110,7 @@ module Blackjack
 			self.eligible_players.each do |player|
 				player.hands.each_index do |i|
 					next if player.hands[i].lost
-					value = player.hands[i].calc_value
-					if value > target
+					if player.has_beat_dealer(target, i)
 						player.win(i)
 					elsif value == target
 						player.tie(i)
@@ -119,6 +119,7 @@ module Blackjack
 					end
 				end
 			end
+			puts ""
 		end
 		def discard_cards
 			to_discard = Array.new
@@ -160,7 +161,7 @@ module Blackjack
 
 				self.discard_cards
 
-				puts "", "Play another round? (Y/N)"
+				puts "Play another round? (Y/N)"
 				print "> "
 				response = $stdin.gets.chomp.downcase
 				if response == "n"

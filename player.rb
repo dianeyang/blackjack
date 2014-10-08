@@ -29,6 +29,7 @@ module Blackjack
 		end
 		def add_card(card, i)
 			@hands[i].add_card(card)
+			self.check_hand(i)
 		end
 		def print_stats(i)
 			puts "Cash: $#{@cash}"
@@ -70,7 +71,7 @@ module Blackjack
 				puts "You can only make that move for your first two cards. Please try again."
 				return false
 			end
-			not_pair = move == "s" && @hands[0].get(0).value != @hands[0].get(1).value
+			not_pair = move == "s" && @hands[0].get(0).type != @hands[0].get(1).type
 			if not_pair
 				puts "Sorry, you can't split because your cards do not have the same value."
 				return false
@@ -83,10 +84,11 @@ module Blackjack
 			return true
 		end
 		def check_hand(i)
-			value = @hands[i].calc_value
-			if value > 21
+			min_value = @hands[i].min_value
+			max_value = @hands[i].max_value
+			if min_value > 21
 				self.bust(i)
-			elsif value == 21
+			elsif min_value <= 21 && (max_value - 21) % 10 == 0
 				self.stand(i, true)
 			end
 		end
@@ -99,28 +101,26 @@ module Blackjack
 		end
 		def hit(card, i)
 			puts "You chose to hit."
-			self.add_card(card, i)
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
-			self.check_hand(i)
+			self.add_card(card, i)
 		end
 		def stand(i, automatic=false)
 			@hands[i].active = false
 			if automatic
-				puts "You hit blackjack, so you automatically stand."
+				puts "You hit 21, so you automatically stand."
 			else
 				puts "You chose to stand."
 			end
 			puts "You cannot take any more cards for this hand.", ""
 		end
 		def double(card)
-			puts "You chose to double."
-			self.add_card(card, 0)
+			puts "You chose to double down."
 			bet = self.get_bet(0)
 			self.set_bet(0, 2*bet)
 			@hands[0].active = false
 			puts "Your bet is now $#{2*bet}.", ""
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
-			self.check_hand(0)
+			self.add_card(card, 0)
 		end
 		def split
 			puts "You chose to split", ""
@@ -135,8 +135,8 @@ module Blackjack
 			puts "You chose to surrender hand \##{i+1}."
 			puts "You lost half of your $#{self.get_bet(i)} bet, leaving you with $#{@cash}.", ""
 		end
-		def calc_score(i)
-			return @hands[i].calc_value
+		def has_beat_dealer(target, i)
+			@hands[i].in_range(target, 21)
 		end
 		def win(i)
 			@cash += self.get_bet(i)
