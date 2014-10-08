@@ -39,15 +39,20 @@ module Blackjack
 			@turn = 0
 			@round = 0
 		end
+		# active_players: returns players in the game who still need to make moves
+		# on some of their hands.
 		def active_players
 			return @players.select {|player| player.is_active}
 		end
+		# eligible_players: players who are eligible to win (i.e. those who haven't
+		# surrendered or bust)
 		def eligible_players
 			return @players.select {|player| !player.has_lost}
 		end
 		def non_bankrupt_players
 			return @players.select {|player| player.cash > 0 }
 		end
+		# reset_game: reset the players who are able to play in the next round
 		def reset_game
 			@players.each do |player|
 				if player.cash <= 0
@@ -79,6 +84,8 @@ module Blackjack
 				puts "Your bet is #{bet}", ""
 			end
 		end
+		# distribute_cards: deal 2 cards to each player and the dealer
+		# at the start of the game
 		def distribute_cards
 			@dealer.shuffle_deck
 			self.active_players.each do |player|
@@ -173,8 +180,8 @@ module Blackjack
 				# each player makes bets
 				self.declare_bets
 
-				# dealer deals 2 cards to each player
-				# dealer deals 1 face-up card and 1 face-down card to himself
+				# dealer deals 2 cards to each player, as well as
+				# 1 face-up card and 1 face-down card to himself
 				self.distribute_cards
 
 				# players go around the table deciding what moves to make
@@ -182,16 +189,18 @@ module Blackjack
 				 	self.do_moves
 				 	@turn += 1
 				end
-				# the dealer reveals the hole card and hits until 17
 
+				# the dealer reveals the hole card and hits until 17
 				# whoever won gets their bet
 				self.determine_winners
 
+				# can't play any more if everyone is bankrupt
 				if self.non_bankrupt_players.length == 0
 					puts "No one has cash left. Guess it's game over. Thanks for playing!"
 					break
 				end
 
+				# put cards from this round back in the deck
 				self.discard_cards
 
 				puts "Play another round? (Y/N)"
