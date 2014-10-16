@@ -31,7 +31,7 @@ module Blackjack
 			while @hand.min_value <= 21
 				if @hand.clamp_value(17, 17) > 0 && @hand.n_aces > 0 # hit on soft 17
 					self.hit
-					value = 17 + @hand.get(-1).value
+					value = @hand.clamp_value(17, 27)
 					break
 				elsif @hand.clamp_value(17, 21) > 0 # hard 17 or anything 18 to 21
 					value = @hand.clamp_value(17, 21)

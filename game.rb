@@ -121,7 +121,7 @@ module Blackjack
 			when move == "d"
 				player.double(@dealer.deal_one)
 			when move == "s"
-				player.split
+				player.split(@dealer.deal_one, @dealer.deal_one)
 			when move == "r"
 				player.surrender(i)
 			end

@@ -127,11 +127,12 @@ module Blackjack
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
 			self.add_card(card, 0)
 		end
-		def split
-			puts "You chose to split", ""
+		def split(card1, card2)
+			puts "You chose to split."
 			first_hand = @hands[0]
-			hand1, hand2 = first_hand.split
+			hand1, hand2 = first_hand.split(card1, card2)
 			@hands = [hand1, hand2]
+			puts "The dealer dealt a #{card1.type} #{card1.suit} to one hand and a #{card2.type} #{card2.suit} to the other.", ""
 		end
 		def surrender(i)
 			@cash -= self.get_bet(i)/2.0

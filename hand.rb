@@ -33,9 +33,9 @@ module Blackjack
 			@cards << card
 			@min_value += card.value
 		end
-		def split
-			hand1 = Hand.new([self.get(0)], @bet)
-			hand2 = Hand.new([self.get(1)], @bet)
+		def split(card1, card2)
+			hand1 = Hand.new([self.get(0), card1], @bet)
+			hand2 = Hand.new([self.get(1), card2], @bet)
 			return hand1, hand2
 		end
 		# clamp_value: test if some interpretation of the hand has a value
