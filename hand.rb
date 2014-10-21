@@ -11,6 +11,7 @@ module Blackjack
 			@cards = cards
 			@bet = bet
 			@active = true
+			@status = "in play"
 			@lost = false
 			@n_aces = cards.select {|card| card.type === "A"}.length
 			@min_value = cards.reduce(0) do |others, current|
@@ -25,6 +26,9 @@ module Blackjack
 		end
 		def is_blackjack
 			return clamp_value(21, 21) && self.get_size == 2
+		end
+		def is_splittable
+			return self.get(0).type == self.get(1).type
 		end
 		def add_card(card)
 			if card.type === "A"

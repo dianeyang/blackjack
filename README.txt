@@ -15,6 +15,8 @@ There are many variations of Blackjack, so here are a few notes about this imple
 
 - Players have the option to hit, stand, surrender, double down, or split on the first move. They can do any of these except the last 2 on subsequent moves.
 
+- Players can split a maximum of 3 times (leaving them with at most 4 hands).
+
 - The table is limited to 10 people. This decision was made because in real life, the dealer only has a certain number of cards and can therefore only support a game with a certain maximum number of people.
 
 - The dealer hits on a soft 17.

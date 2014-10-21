@@ -80,7 +80,7 @@ module Blackjack
 					end
 				end while bet > player.cash || bet <= 0
 
-				player.set_bet(0, bet)
+				player.hands[0].bet = bet
 				puts "Your bet is #{bet}", ""
 			end
 		end
@@ -92,38 +92,46 @@ module Blackjack
 				card1 = @dealer.deal_one
 				card2 = @dealer.deal_one
 				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
-				player.add_card(card1, 0)
-				player.add_card(card2, 0)
+				player.add_card(card1, player.hands[0])
+				player.add_card(card2, player.hands[0])
 			end
 			faceup = @dealer.deal_to_self
 			puts "The dealer has a #{faceup.type} #{faceup.suit} and a face-down card."
 			puts ""
 		end
-		def do_moves
+		def do_turns
 			self.active_players.each do |player|
+				# print out header + stats
 				puts "==============================================="
 				puts "#{player.name}'s turn:".upcase
 				puts "===============================================", ""
-				player.hands.each_index do |i|
-					next if !player.hands[i].active
-					puts "Hand \##{i+1}:".upcase
-					move = player.get_move(@turn, i)
-					self.handle_decision(move, player, i)
+				@dealer.print_upcard
+				puts ""
+				player.print_stats
+				# handle moves and update player state
+				moves = player.get_moves
+				updated_hands = Array.new
+				moves.zip(player.hands).each do |move, hand|
+					update = self.update_hand(move, player, hand)
+					if !update.nil?
+						updated_hands.concat(update)
+					end
 				end
+				player.hands = updated_hands
 			end
 		end
-		def handle_decision(move, player, i)
+		def update_hand(move, player, hand)
 			case
 			when move == "h"
-				player.hit(@dealer.deal_one, i)
+				return player.hit(@dealer.deal_one, hand)
 			when move == "e"
-				player.stand(i)
+				return player.stand(hand)
 			when move == "d"
-				player.double(@dealer.deal_one)
+				return player.double(@dealer.deal_one, hand)
 			when move == "s"
-				player.split(@dealer.deal_one, @dealer.deal_one)
+				return player.split(@dealer.deal_one, @dealer.deal_one, hand)
 			when move == "r"
-				player.surrender(i)
+				return player.surrender(hand)
 			end
 		end
 		def determine_winners
@@ -147,15 +155,15 @@ module Blackjack
 			"""
 			target = @dealer.reveal
 			self.eligible_players.each do |player|
-				player.hands.each_index do |i|
-					next if player.hands[i].lost
-					value = player.hands[i].clamp_value(target, 21)
+				player.inactive_hands.each do |hand|
+					next if hand.lost
+					value = hand.clamp_value(target, 21)
 					if value < 0 # there was no value between target and 21
-						player.lose(i)
-					elsif value > target || (player.hands[i].is_blackjack && !@dealer.hand.is_blackjack) || value == 0
-						player.win(i)
+						player.lose(hand)
+					elsif value > target || (hand.is_blackjack && !@dealer.hand.is_blackjack) || value == 0
+						player.win(hand)
 					else
-						player.tie(i)
+						player.tie(hand)
 					end
 				end
 			end
@@ -186,7 +194,7 @@ module Blackjack
 
 				# players go around the table deciding what moves to make
 				while !self.active_players.empty?
-				 	self.do_moves
+				 	self.do_turns
 				 	@turn += 1
 				end
 

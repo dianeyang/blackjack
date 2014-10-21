@@ -11,6 +11,14 @@ module Blackjack
 		def deal_one
 			return @deck.remove_card
 		end
+		def deal_n
+			for i in 1..n
+				self.deal_one
+			end
+		end
+		def get_top_n(n)
+			return @deck.get_top_n(n)
+		end
 		def hit
 			card = @deck.remove_card
 			@hand.add_card(card)
@@ -54,6 +62,10 @@ module Blackjack
 				puts "The dealer has a total value of #{value}.", ""
 				return value
 			end
+		end
+		def print_upcard
+			puts "Dealer upcard:".upcase
+			puts @hand.get(0).to_string
 		end
 		def shuffle_deck
 			@deck.shuffle

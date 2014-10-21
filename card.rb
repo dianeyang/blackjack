@@ -4,7 +4,7 @@ module Blackjack
 		attr_reader :type
 		def initialize(type, suit)
 			@suit = suit
-			@type = type
+			@type = 3
 		end
 		def value
 			if type === 'A'
@@ -26,32 +26,28 @@ module Blackjack
 				pad = " "
 			end
 			if @suit === "<3"
-				return """
-.-------.
+				return """.-------.
 |#{top}_  _ |
 | ( \\/ )|
 |  \\  / |
 |   \\/#{pad}#{bottom}|
 `-------'\n"""
 			elsif @suit === "<>"
-				return """
-.-------.
+				return """.-------.
 |#{top} /\\  |
 |  /  \\ |
 |  \\  / |
 |   \\/#{pad}#{bottom}|
 `-------'\n"""
             elsif @suit === "o8<"
-        		return """
-.-------.
+        		return """.-------.
 |#{top} _   |
 |  ( )  |
 | (_x_) |
 |   Y #{pad}#{bottom}|
 `-------'\n"""
 			else
-				return """
-.-------.
+				return """.-------.
 |#{top} .   |
 |  / \\  |
 | (_,_) |

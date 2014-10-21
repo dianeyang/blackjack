@@ -16,6 +16,10 @@ module Blackjack
 			@cards = @cards.shuffle
 			puts "Shuffling the deck..."
 		end
+		def get_top_n(n)
+			puts @cards[0, n-1]
+			return @cards[0, n-1]
+		end
 		def remove_card
 			if @cards.empty?
 				raise "Uh oh, the deck shouldn't be empty."
