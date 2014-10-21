@@ -133,13 +133,13 @@ module Blackjack
 			@cash -= hand.bet
 			hand.status = "bust"
 			hand.lost = true
-			puts "Uh oh! The value of your hand has surpassed 21."
+			puts "Uh oh! Your hand containing #{hand.to_inline_string} has surpassed 21."
 			puts "Your bet of $#{hand.bet} on that hand has been deducted from your cash, leaving you with $#{self.format_cash}", ""
 			self.set_hand_to_inactive(hand)
 			return nil
 		end
 		def hit(card, hand)
-			puts "You chose to hit."
+			puts "You chose to hit the hand containing #{hand.to_inline_string}."
 			puts "That hand was dealt a #{card.type} #{card.suit}.", ""
 			updated = self.add_card(card, hand)
 			return updated
@@ -148,20 +148,20 @@ module Blackjack
 			self.set_hand_to_inactive(hand)
 			hand.status = "stand"
 			if blackjack
-				puts "One of your hands is a blackjack and automatically stands."
+				puts "Your hand containing #{hand.to_inline_string} is a blackjack and automatically stands."
 			elsif automatic
-				puts "One of your hands hit 21 and automatically stands."
+				puts "Your hand containing #{hand.to_inline_string} hit 21 and automatically stands."
 			else
-				puts "You chose to stand."
+				puts "You chose to stand your hand containing #{hand.to_inline_string}."
 			end
 			puts "You cannot take any more cards for this hand.", ""
 			return nil
 		end
 		def double(card, hand)
-			puts "You chose to double down."
+			puts "You chose to double down on the hand containing #{hand.to_inline_string}."
 			hand.bet = 2*hand.bet
 			hand.active = false
-			hand.status = "doubled"
+			hand.status = "double down"
 			puts "Your bet is now $#{hand.bet}.", ""
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
 			result = self.add_card(card, hand)
@@ -172,30 +172,43 @@ module Blackjack
 		end
 		def split(card1, card2, hand)
 			puts "You chose to split the pair containing a #{hand.get(0).type} #{hand.get(0).suit} and a #{hand.get(1).type} #{hand.get(1).suit}."
-			puts "The dealer dealt a #{card1.type} #{card1.suit} to one of the resulting hands and a #{card2.type} #{card2.suit} to the other."
+			puts "The dealer dealt a #{card1.type} #{card1.suit} to one of the resulting hands and a #{card2.type} #{card2.suit} to the other.", ""
 			hand1, hand2 = hand.split(card1, card2)
 			@splits += 1
-			return [hand1, hand2]
+			result1 = check_hand(hand1)
+			result2 = check_hand(hand2)
+			results = Array.new
+			if !result1.nil?
+				results.concat(result1)
+			end
+			if !result2.nil?
+				results.concat(result2)
+			end
+			if results.length > 0
+				return results
+			else
+				return nil
+			end
 		end
 		def surrender(hand)
 			@cash -= hand.bet/2.0
 			hand.lost = true
 			hand.status = "surrendered"
-			puts "You chose to surrender."
+			puts "You chose to surrender the hand containing #{hand.to_inline_string}."
 			puts "You lost half of your $#{hand.bet} bet on that hand, leaving you with $#{self.format_cash}.", ""
 			self.set_hand_to_inactive(hand)
 			return nil
 		end
 		def win(hand)
 			@cash += hand.bet
-			puts "#{@name} won $#{hand.bet} from their hand containing#{hand.to_inline_string}. #{@name} now has $#{self.format_cash}!"
+			puts "#{@name} won $#{hand.bet} from their hand containing #{hand.to_inline_string}. #{@name} now has $#{self.format_cash}!"
 		end
 		def tie(hand)
-			puts "#{@name}'s hand containing#{hand.to_inline_string} tied with the dealer, neither winning nor losing money. #{@name} still has $#{self.format_cash}."
+			puts "#{@name}'s hand containing #{hand.to_inline_string} tied with the dealer, neither winning nor losing money. #{@name} still has $#{self.format_cash}."
 		end
 		def lose(hand)
 			@cash -= hand.bet
-			puts "#{@name}'s hand containing#{hand.to_inline_string} didn't surpass the dealer. #{@name} lost $#{hand.bet} and now has $#{self.format_cash}."
+			puts "#{@name}'s hand containing #{hand.to_inline_string} didn't surpass the dealer. #{@name} lost $#{hand.bet} and now has $#{self.format_cash}."
 		end
 	end
 end
