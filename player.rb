@@ -31,12 +31,20 @@ module Blackjack
 		end
 		def print_stats
 			puts "CASH REMAINING: $#{self.format_cash}".upcase, ""
+			self.print_inactive_hands
+			self.print_active_hands
+		end
+		def print_active_hands
+			if @hands.length > 0
+				puts "Hands still in play:".upcase
+				@hands.print
+			end
+		end
+		def print_inactive_hands
 			if @inactive_hands.length > 0
 				puts "Hands out of play:".upcase
-				@inactive_hands.print
+				@inactive_hands.print(true)
 			end
-			puts "Hands still in play:".upcase
-			@hands.print
 		end
 		def get_moves
 			if @hands.length == 1
@@ -67,7 +75,11 @@ module Blackjack
 				return false
 			end
 			if @hands.total_at_stake(moves) > self.cash
-				puts "You don't have enough money to make those moves."
+				if moves.length > 1
+					puts "You don't have enough money to make those moves."
+				else
+					puts "You don't have enough money to make that move."
+				end
 				return false
 			end
 			@hands.hands.zip(moves).each do |hand, move|
@@ -80,7 +92,7 @@ module Blackjack
 		def validate_move(move, hand)
 			in_set = ["h", "e", "d", "s", "r"].include? move
 			if !in_set
-				puts "One of your moves was invalid. Please try again."
+				puts "One or more of your moves was invalid. Please try again."
 				return false
 			end
 			not_two_cards = (move == "d" || move == "s") && hand.get_size != 2
@@ -122,22 +134,23 @@ module Blackjack
 			hand.status = "bust"
 			hand.lost = true
 			puts "Uh oh! The value of your hand has surpassed 21."
-			puts "Your bet of $#{hand.bet} has been deducted from your cash, leaving you with $#{self.format_cash}", ""
+			puts "Your bet of $#{hand.bet} on that hand has been deducted from your cash, leaving you with $#{self.format_cash}", ""
 			self.set_hand_to_inactive(hand)
 			return nil
 		end
 		def hit(card, hand)
 			puts "You chose to hit."
-			puts "Your hand was dealt a #{card.type} #{card.suit}.", ""
+			puts "That hand was dealt a #{card.type} #{card.suit}.", ""
 			updated = self.add_card(card, hand)
 			return updated
 		end
 		def stand(hand, automatic=false, blackjack=false)
 			self.set_hand_to_inactive(hand)
+			hand.status = "stand"
 			if blackjack
-				puts "#{@name} got a blackjack and automatically stands."
+				puts "One of your hands is a blackjack and automatically stands."
 			elsif automatic
-				puts "#{@name} hit 21 and automatically stands."
+				puts "One of your hands hit 21 and automatically stands."
 			else
 				puts "You chose to stand."
 			end
@@ -148,6 +161,7 @@ module Blackjack
 			puts "You chose to double down."
 			hand.bet = 2*hand.bet
 			hand.active = false
+			hand.status = "doubled"
 			puts "Your bet is now $#{hand.bet}.", ""
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
 			self.add_card(card, hand)
@@ -164,21 +178,22 @@ module Blackjack
 		def surrender(hand)
 			@cash -= hand.bet/2.0
 			hand.lost = true
+			hand.status = "surrendered"
 			puts "You chose to surrender."
-			puts "You lost half of your $#{hand.bet} bet, leaving you with $#{self.format_cash}.", ""
+			puts "You lost half of your $#{hand.bet} bet on that hand, leaving you with $#{self.format_cash}.", ""
 			self.set_hand_to_inactive(hand)
 			return nil
 		end
 		def win(hand)
 			@cash += hand.bet
-			puts "#{@name} won $#{hand.bet} from hand. #{@name} now has $#{self.format_cash}!"
+			puts "#{@name} won $#{hand.bet} from their hand containing#{hand.to_inline_string}. #{@name} now has $#{self.format_cash}!"
 		end
 		def tie(hand)
-			puts "#{@name}'s hand tied with the dealer, neither winning nor losing money. #{@name} still has $#{self.format_cash}."
+			puts "#{@name}'s hand containing#{hand.to_inline_string} tied with the dealer, neither winning nor losing money. #{@name} still has $#{self.format_cash}."
 		end
 		def lose(hand)
 			@cash -= hand.bet
-			puts "#{@name}'s hand didn't surpass the dealer. #{@name} lost $#{hand.bet} and now has $#{self.format_cash}."
+			puts "#{@name}'s hand containing#{hand.to_inline_string} didn't surpass the dealer. #{@name} lost $#{hand.bet} and now has $#{self.format_cash}."
 		end
 	end
 end

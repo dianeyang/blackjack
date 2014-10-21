@@ -4,7 +4,7 @@ module Blackjack
 		attr_reader :type
 		def initialize(type, suit)
 			@suit = suit
-			@type = 3
+			@type = type
 		end
 		def value
 			if type === 'A'

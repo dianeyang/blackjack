@@ -3,6 +3,7 @@ module Blackjack
 		attr_accessor :bet
 		attr_accessor :active
 		attr_accessor :lost
+		attr_accessor :status
 		attr_reader :cards
 		attr_reader :current_value
 		attr_reader :min_value
@@ -67,6 +68,19 @@ module Blackjack
 					string += lines[i]
 				end
 				string += "\n"
+			end
+			return string
+		end
+		def to_inline_string
+			string = ""
+			@cards.each_index do |i|
+				if i == self.get_size - 1
+					string += " and"
+				end
+				string += " #{cards[i].type} #{cards[i].suit}"
+				if i != self.get_size - 1  && self.get_size != 2
+					string += ","
+				end
 			end
 			return string
 		end

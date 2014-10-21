@@ -93,7 +93,10 @@ module Blackjack
 				card2 = @dealer.deal_one
 				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
 				player.add_card(card1, player.hands.get(0))
-				player.add_card(card2, player.hands.get(0))
+				hand = player.add_card(card2, player.hands.get(0))
+				if hand.nil?
+					player.hands = HandCollection.new()
+				end
 			end
 			faceup = @dealer.deal_to_self
 			puts "The dealer has a #{faceup.type} #{faceup.suit} and a face-down card."
@@ -118,6 +121,9 @@ module Blackjack
 					end
 				end
 				player.hands = updated_hands
+				puts "Your hands are now:", ""
+				player.print_inactive_hands
+				player.print_active_hands
 			end
 		end
 		def update_hand(move, player, hand)
