@@ -6,36 +6,21 @@ module Blackjack
 		attr_accessor :inactive_hands
 		def initialize(name)
 			@cash = 1000
-			@hands = [Hand.new]
-			@inactive_hands = Array.new
+			@hands = HandCollection.new([Hand.new])
+			@inactive_hands = HandCollection.new
 			@name = name
 			@splits = 0
 		end
 		def reset
-			@hands = [Hand.new]
-			@inactive_hands = Array.new
+			@hands = HandCollection.new([Hand.new])
+			@inactive_hands = HandCollection.new
 			@splits = 0
 		end
 		def is_active
-			return @hands.length > 0 && cash > 0
+			return @hands.hands.length > 0 && cash > 0
 		end
 		def has_lost
-			return @inactive_hands.reduce(true) do |others, current|
-				others && current.lost
-			end
-		end
-		def total_at_stake(moves, hands)
-			total = 0
-			moves.zip(hands).each do |move, hand|
-				if move == "s" || move == "d"
-					total += 2 * hand.bet
-				elsif move == "r"
-					total += 0.5 * hand.bet
-				else
-					total += hand.bet
-				end
-			end
-			return total
+			return @inactive_hands.has_lost
 		end
 		def add_card(card, hand)
 			hand.add_card(card)
@@ -48,16 +33,10 @@ module Blackjack
 			puts "CASH REMAINING: $#{self.format_cash}".upcase, ""
 			if @inactive_hands.length > 0
 				puts "Hands out of play:".upcase
-				self.print_hands(@inactive_hands)
+				@inactive_hands.print
 			end
 			puts "Hands still in play:".upcase
-			self.print_hands
-		end
-		def print_hands(hands = @hands)
-			hands.each_index do |i|
-				puts hands[i].to_string
-				puts "Bet: $#{hands[i].bet}", ""
-			end
+			@hands.print
 		end
 		def get_moves
 			if @hands.length == 1
@@ -87,11 +66,11 @@ module Blackjack
 				puts "You specified #{moves.length} moves, but you have #{@hands.length} hands. Please try again."
 				return false
 			end
-			if self.total_at_stake(moves, @hands) > self.cash
+			if @hands.total_at_stake(moves) > self.cash
 				puts "You don't have enough money to make those moves."
 				return false
 			end
-			@hands.zip(moves).each do |hand, move|
+			@hands.hands.zip(moves).each do |hand, move|
 				if !validate_move(move, hand)
 					return false
 				end
@@ -136,7 +115,7 @@ module Blackjack
 			return updated
 		end
 		def set_hand_to_inactive(hand)
-			@inactive_hands << hand
+			@inactive_hands.add([hand])
 		end
 		def bust(hand)
 			@cash -= hand.bet
@@ -149,7 +128,7 @@ module Blackjack
 		end
 		def hit(card, hand)
 			puts "You chose to hit."
-			puts "#Your hand was dealt a #{card.type} #{card.suit}.", ""
+			puts "Your hand was dealt a #{card.type} #{card.suit}.", ""
 			updated = self.add_card(card, hand)
 			return updated
 		end
@@ -182,56 +161,6 @@ module Blackjack
 			@splits += 1
 			return [hand1, hand2]
 		end
-		def split2(cards, hand)
-			splittables = [hand] # queue of hands to split
-			others = Array.new # non-splittable hands
-			iter = 0
-			while !splittables.empty?
-				if @splits == 3
-					puts "You can only split up to 3 times."
-					break
-				end
-				if iter != 0
-					puts "You have another hand that can be split. Would you like to split it? (Y/N)"
-					response = $stdin.gets.chomp.downcase
-					if response != "y"
-						break
-					end
-					if self.total_at_stake + splittables[0].bet > @cash
-						puts "Sorry, you don't have enough money to split again."
-						break
-					end
-				end
-				# pop a hand off the queue and split it
-				current = splittables.pop
-				puts 2*iter
-				card1 = cards[2*iter]
-				card2 = cards[2*iter+1]
-				puts card1
-				puts card2
-				puts ""
-				hand1, hand2 = current.split(card1, card2)
-				@splits += 1
-				# if the split hands are themselves splittable, add them to the queue
-				if hand1.is_splittable
-					splittables << hand1
-				else
-					other << hand1
-				end
-				if hand2.is_splittable
-					splittables << hand2
-				else
-					other << hand2
-				end
-				puts "You chose to split the pair containing a #{current.get(0).type} #{current.get(0).suit} and a #{current.get(1).type} #{current.get(1).suit}."
-				puts "The dealer dealt a #{card1.type} #{card1.suit} to one of the resulting hands and a #{card2.type} #{card2.suit} to the other."
-				puts "Your hands are now:"
-				@hands = splittables.concat(others)
-				self.print_hands
-				iter += 1
-			end
-			return @hands, 2*(iter+1)
-		end
 		def surrender(hand)
 			@cash -= hand.bet/2.0
 			hand.lost = true
@@ -250,13 +179,6 @@ module Blackjack
 		def lose(hand)
 			@cash -= hand.bet
 			puts "#{@name}'s hand didn't surpass the dealer. #{@name} lost $#{hand.bet} and now has $#{self.format_cash}."
-		end
-		def get_all_cards
-			cards = Array.new
-			@hands.each do |hand|
-				cards.concat(hand.cards)
-			end
-			return cards
 		end
 	end
 end

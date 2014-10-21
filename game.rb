@@ -80,7 +80,7 @@ module Blackjack
 					end
 				end while bet > player.cash || bet <= 0
 
-				player.hands[0].bet = bet
+				player.hands.get(0).bet = bet
 				puts "Your bet is #{bet}", ""
 			end
 		end
@@ -92,8 +92,8 @@ module Blackjack
 				card1 = @dealer.deal_one
 				card2 = @dealer.deal_one
 				puts "#{player.name} got dealt a #{card1.type} #{card1.suit} and a #{card2.type} #{card2.suit}."
-				player.add_card(card1, player.hands[0])
-				player.add_card(card2, player.hands[0])
+				player.add_card(card1, player.hands.get(0))
+				player.add_card(card2, player.hands.get(0))
 			end
 			faceup = @dealer.deal_to_self
 			puts "The dealer has a #{faceup.type} #{faceup.suit} and a face-down card."
@@ -110,11 +110,11 @@ module Blackjack
 				player.print_stats
 				# handle moves and update player state
 				moves = player.get_moves
-				updated_hands = Array.new
-				moves.zip(player.hands).each do |move, hand|
+				updated_hands = HandCollection.new
+				moves.zip(player.hands.hands).each do |move, hand|
 					update = self.update_hand(move, player, hand)
 					if !update.nil?
-						updated_hands.concat(update)
+						updated_hands.add(update)
 					end
 				end
 				player.hands = updated_hands
@@ -155,7 +155,7 @@ module Blackjack
 			"""
 			target = @dealer.reveal
 			self.eligible_players.each do |player|
-				player.inactive_hands.each do |hand|
+				player.inactive_hands.hands.each do |hand|
 					next if hand.lost
 					value = hand.clamp_value(target, 21)
 					if value < 0 # there was no value between target and 21
@@ -172,7 +172,8 @@ module Blackjack
 		def discard_cards
 			to_discard = Array.new
 			@players.each do |player|
-				to_discard.concat(player.get_all_cards)
+				to_discard.concat(player.hands.get_all_cards)
+				to_discard.concat(player.inactive_hands.get_all_cards)
 				player.reset
 			end
 			@dealer.replenish_deck(to_discard)
