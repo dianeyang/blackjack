@@ -10,7 +10,7 @@ module Blackjack
 				end
 			end
 			# we use 2 decks of cards
-			@cards = cards.concat(cards)
+			@cards = [cards, cards, cards, cards, cards, cards].flatten
 		end
 		def shuffle
 			@cards = @cards.shuffle

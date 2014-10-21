@@ -164,8 +164,10 @@ module Blackjack
 			hand.status = "doubled"
 			puts "Your bet is now $#{hand.bet}.", ""
 			puts "#{@name} was dealt a #{card.type} #{card.suit}.", ""
-			self.add_card(card, hand)
-			self.set_hand_to_inactive(hand)
+			result = self.add_card(card, hand)
+			if !result.nil?
+				self.set_hand_to_inactive(hand)
+			end
 			return nil
 		end
 		def split(card1, card2, hand)

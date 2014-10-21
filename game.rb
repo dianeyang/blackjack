@@ -13,16 +13,17 @@ module Blackjack
 			puts "Hello there, lucky ladies and gents! I'll be your dealer tonight."
 			puts "But first, how many players are at the table?"
 
+			max_players = 8
 			begin
 				print "> "
 				nplayers = $stdin.gets.chomp.to_i
 				puts ""
 				if nplayers <= 0
 					puts "Invalid number of players. Please try again."
-				elsif nplayers > 10
-					puts "Sorry, we only have room for up to 10 people. Please try again."
+				elsif nplayers > max_players
+					puts "Sorry, we only have room for up to #{max_players} people. Please try again."
 				end
-			end while nplayers <= 0 || nplayers > 10
+			end while nplayers <= 0 || nplayers > max_players
 
 			puts "#{nplayers} players? Sounds good. What are your names?", ""
 
